@@ -1,0 +1,113 @@
+<div
+  class="cdu-cart-drawer"
+  data-cdu-cart-drawer
+  style="
+    --cdu-background: {{ block.settings.background_color }};
+    --cdu-text: {{ block.settings.text_color }};
+  "
+>
+  <button
+    type="button"
+    class="cdu-cart-drawer__launcher"
+    data-cdu-open
+    aria-controls="cdu-cart-panel-{{ block.id }}"
+    aria-expanded="false"
+  >
+    {{ block.settings.launcher_label }}
+  </button>
+
+  <div
+    class="cdu-cart-drawer__overlay"
+    data-cdu-overlay
+  ></div>
+
+  <aside
+    id="cdu-cart-panel-{{ block.id }}"
+    class="cdu-cart-drawer__panel"
+    data-cdu-panel
+    aria-hidden="true"
+    aria-labelledby="cdu-cart-title-{{ block.id }}"
+  >
+    <header class="cdu-cart-drawer__header">
+      <h2 id="cdu-cart-title-{{ block.id }}">
+        {{ block.settings.heading }}
+      </h2>
+
+      <button
+        type="button"
+        class="cdu-cart-drawer__close"
+        data-cdu-close
+        aria-label="Close cart drawer"
+      >
+        &times;
+      </button>
+    </header>
+
+    <div
+      class="cdu-cart-drawer__content"
+      data-cdu-content
+    >
+      <p class="cdu-cart-drawer__loading">Loading cart...</p>
+    </div>
+
+    <p
+      class="cdu-visually-hidden"
+      data-cdu-status
+      role="status"
+      aria-live="polite"
+    ></p>
+
+    <footer
+      class="cdu-cart-drawer__footer"
+      data-cdu-footer
+      hidden
+    >
+      <div class="cdu-cart-drawer__subtotal">
+        <span>Subtotal</span>
+        <strong data-cdu-subtotal></strong>
+      </div>
+
+      <a
+        class="cdu-cart-drawer__checkout"
+        href="/checkout"
+      >
+        Check out
+      </a>
+    </footer>
+      </aside>
+    </div>
+
+{% schema %}
+{
+  "name": "Cart Drawer",
+  "target": "body",
+  "stylesheet": "cart-drawer.css",
+  "javascript": "cart-drawer.js",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Drawer heading",
+      "default": "Your cart"
+    },
+    {
+      "type": "text",
+      "id": "launcher_label",
+      "label": "Test button label",
+      "default": "Open cart"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#121212"
+    }
+  ]
+}
+{% endschema %}
