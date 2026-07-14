@@ -1,6 +1,7 @@
 <div
   class="cdu-cart-drawer"
   data-cdu-cart-drawer
+  data-cdu-replace-native-drawer="{{ block.settings.replace_native_drawer }}"
   style="
     --cdu-background: {{ block.settings.background_color }};
     --cdu-text: {{ block.settings.text_color }};
@@ -84,6 +85,12 @@
   "stylesheet": "cart-drawer.css",
   "javascript": "cart-drawer.js",
   "settings": [
+    {
+      "type": "checkbox",
+      "id": "replace_native_drawer",
+      "label": "Replace the theme cart drawer",
+      "default": true
+    },
     {
       "type": "text",
       "id": "heading",
