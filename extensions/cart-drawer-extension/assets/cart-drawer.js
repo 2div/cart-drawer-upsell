@@ -375,6 +375,28 @@ function installDawnCartDrawerAdapter() {
       "[data-cdu-shipping-bar]",
     );
 
+    document.addEventListener(
+      "pointerdown",
+      (event) => {
+        if (!root.classList.contains("is-open")) {
+          return;
+        }
+
+        const eventPath = event.composedPath();
+
+        // Clicking anywhere inside the drawer should not close it.
+        if (eventPath.includes(panel)) {
+          return;
+        }
+
+        closeDrawer();
+      },
+      {
+        capture: true,
+        signal,
+      },
+    );
+
     const showShippingProgress =
       root.dataset.cduShowShippingProgress === "true";
 
@@ -511,14 +533,14 @@ function installDawnCartDrawerAdapter() {
 
   shippingMessageElement.textContent =
     shippingMessage.replace(
-      "{{ amount }}",
+       "[amount]",
       formattedRemaining,
     );
 }
 
     function renderCart(cart) {
       renderShippingProgress(cart);
-      
+
       if (!cart || cart.item_count === 0) {
         content.innerHTML = `
           <div class="cdu-cart-drawer__empty">

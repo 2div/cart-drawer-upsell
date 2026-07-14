@@ -32,15 +32,30 @@
     id="cdu-cart-panel-{{ block.id }}"
     class="cdu-cart-drawer__panel"
     data-cdu-panel
+    role="dialog"
+    aria-modal="true"
     aria-hidden="true"
     aria-labelledby="cdu-cart-title-{{ block.id }}"
   >
     <header class="cdu-cart-drawer__header">
+      <h2 id="cdu-cart-title-{{ block.id }}">
+        {{ block.settings.heading }}
+      </h2>
+
+      <button
+        type="button"
+        class="cdu-cart-drawer__close"
+        data-cdu-close
+        aria-label="Close cart drawer"
+      >
+        &times;
+      </button>
+    </header>
 
     <div
-    class="cdu-shipping-progress"
-    data-cdu-shipping-progress
-    hidden
+      class="cdu-shipping-progress"
+      data-cdu-shipping-progress
+      hidden
     >
       <p
         class="cdu-shipping-progress__message"
@@ -63,25 +78,13 @@
       </div>
     </div>
 
-      <h2 id="cdu-cart-title-{{ block.id }}">
-        {{ block.settings.heading }}
-      </h2>
-
-      <button
-        type="button"
-        class="cdu-cart-drawer__close"
-        data-cdu-close
-        aria-label="Close cart drawer"
-      >
-        &times;
-      </button>
-    </header>
-
     <div
       class="cdu-cart-drawer__content"
       data-cdu-content
     >
-      <p class="cdu-cart-drawer__loading">Loading cart...</p>
+      <p class="cdu-cart-drawer__loading">
+        Loading cart...
+      </p>
     </div>
 
     <p
@@ -108,8 +111,8 @@
         Check out
       </a>
     </footer>
-      </aside>
-    </div>
+  </aside>
+</div>
 
 {% schema %}
 {
@@ -137,6 +140,30 @@
       "default": "Open cart"
     },
     {
+      "type": "checkbox",
+      "id": "show_shipping_progress",
+      "label": "Show free shipping progress",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "shipping_goal",
+      "label": "Free shipping goal",
+      "default": 100
+    },
+    {
+      "type": "text",
+      "id": "shipping_message",
+      "label": "Progress message",
+      "default": "You are [amount] away from free shipping"
+    },
+    {
+      "type": "text",
+      "id": "shipping_success_message",
+      "label": "Success message",
+      "default": "You have unlocked free shipping!"
+    },
+    {
       "type": "color",
       "id": "background_color",
       "label": "Background color",
@@ -147,33 +174,6 @@
       "id": "text_color",
       "label": "Text color",
       "default": "#121212"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_shipping_progress",
-      "label": "Show free shipping progress",
-      "default": true
-    },
-    {
-      "type": "range",
-      "id": "shipping_goal",
-      "label": "Free shipping goal",
-      "min": 1,
-      "max": 1000,
-      "step": 1,
-      "default": 100
-    },
-    {
-      "type": "text",
-      "id": "shipping_message",
-      "label": "Progress message",
-      "default": "You are {{ amount }} away from free shipping"
-    },
-    {
-      "type": "text",
-      "id": "shipping_success_message",
-      "label": "Success message",
-      "default": "You have unlocked free shipping!"
     }
   ]
 }

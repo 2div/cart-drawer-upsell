@@ -301,3 +301,12 @@ html.cdu-cart-drawer-open {
   .cdu-shipping-progress__message {
   font-weight: 600;
 }
+
+.cdu-cart-drawer__overlay {
+  pointer-events: none;
+}
+
+.cdu-cart-drawer.is-open
+  .cdu-cart-drawer__overlay {
+  pointer-events: auto;
+}
