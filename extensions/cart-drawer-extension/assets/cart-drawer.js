@@ -359,6 +359,36 @@ function installDawnCartDrawerAdapter() {
     const status = root.querySelector(
       "[data-cdu-status]",
     );
+    const shippingProgress = root.querySelector(
+      "[data-cdu-shipping-progress]",
+    );
+
+    const shippingMessageElement = root.querySelector(
+      "[data-cdu-shipping-message]",
+    );
+
+    const shippingTrack = root.querySelector(
+      "[data-cdu-shipping-track]",
+    );
+
+    const shippingBar = root.querySelector(
+      "[data-cdu-shipping-bar]",
+    );
+
+    const showShippingProgress =
+      root.dataset.cduShowShippingProgress === "true";
+
+    const shippingGoalMajor = Number(
+      root.dataset.cduShippingGoal || 0,
+    );
+
+    const shippingMessage =
+      root.dataset.cduShippingMessage ||
+      "You are {{ amount }} away from free shipping";
+
+    const shippingSuccessMessage =
+      root.dataset.cduShippingSuccessMessage ||
+      "You have unlocked free shipping!";
 
     if (
       !openButton ||
@@ -415,7 +445,80 @@ function installDawnCartDrawerAdapter() {
         });
     }
 
+    function renderShippingProgress(cart) {
+  if (
+    !shippingProgress ||
+    !shippingMessageElement ||
+    !shippingTrack ||
+    !shippingBar ||
+    !showShippingProgress ||
+    !Number.isFinite(shippingGoalMajor) ||
+    shippingGoalMajor <= 0
+  ) {
+    if (shippingProgress) {
+      shippingProgress.hidden = true;
+    }
+
+    return;
+  }
+
+  const goalMinor = Math.round(
+    shippingGoalMajor * 100,
+  );
+
+  const cartTotal = Number(
+    cart?.total_price || 0,
+  );
+
+  const remaining = Math.max(
+    goalMinor - cartTotal,
+    0,
+  );
+
+  const progress = Math.min(
+    (cartTotal / goalMinor) * 100,
+    100,
+  );
+
+  shippingProgress.hidden = false;
+
+  shippingBar.style.width = `${progress}%`;
+
+  shippingTrack.setAttribute(
+    "aria-valuenow",
+    String(Math.round(progress)),
+  );
+
+  if (remaining === 0) {
+    shippingProgress.classList.add(
+      "is-complete",
+    );
+
+    shippingMessageElement.textContent =
+      shippingSuccessMessage;
+
+    return;
+  }
+
+  shippingProgress.classList.remove(
+    "is-complete",
+  );
+
+  const formattedRemaining = formatMoney(
+    remaining,
+    cart.currency,
+  );
+
+  shippingMessageElement.textContent =
+    shippingMessage.replace(
+      "{{ amount }}",
+      formattedRemaining,
+    );
+}
+
     function renderCart(cart) {
+      renderShippingProgress(cart);
+      
       if (!cart || cart.item_count === 0) {
         content.innerHTML = `
           <div class="cdu-cart-drawer__empty">

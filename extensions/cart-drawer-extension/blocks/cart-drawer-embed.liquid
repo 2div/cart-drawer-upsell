@@ -1,6 +1,10 @@
 <div
   class="cdu-cart-drawer"
   data-cdu-cart-drawer
+  data-cdu-show-shipping-progress="{{ block.settings.show_shipping_progress }}"
+  data-cdu-shipping-goal="{{ block.settings.shipping_goal }}"
+  data-cdu-shipping-message="{{ block.settings.shipping_message | escape }}"
+  data-cdu-shipping-success-message="{{ block.settings.shipping_success_message | escape }}"
   data-cdu-replace-native-drawer="{{ block.settings.replace_native_drawer }}"
   style="
     --cdu-background: {{ block.settings.background_color }};
@@ -32,6 +36,33 @@
     aria-labelledby="cdu-cart-title-{{ block.id }}"
   >
     <header class="cdu-cart-drawer__header">
+
+    <div
+    class="cdu-shipping-progress"
+    data-cdu-shipping-progress
+    hidden
+    >
+      <p
+        class="cdu-shipping-progress__message"
+        data-cdu-shipping-message
+      ></p>
+
+      <div
+        class="cdu-shipping-progress__track"
+        role="progressbar"
+        aria-label="Free shipping progress"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+        data-cdu-shipping-track
+      >
+        <span
+          class="cdu-shipping-progress__bar"
+          data-cdu-shipping-bar
+        ></span>
+      </div>
+    </div>
+
       <h2 id="cdu-cart-title-{{ block.id }}">
         {{ block.settings.heading }}
       </h2>
@@ -116,6 +147,33 @@
       "id": "text_color",
       "label": "Text color",
       "default": "#121212"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shipping_progress",
+      "label": "Show free shipping progress",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "shipping_goal",
+      "label": "Free shipping goal",
+      "min": 1,
+      "max": 1000,
+      "step": 1,
+      "default": 100
+    },
+    {
+      "type": "text",
+      "id": "shipping_message",
+      "label": "Progress message",
+      "default": "You are {{ amount }} away from free shipping"
+    },
+    {
+      "type": "text",
+      "id": "shipping_success_message",
+      "label": "Success message",
+      "default": "You have unlocked free shipping!"
     }
   ]
 }

@@ -266,3 +266,38 @@ html.cdu-cart-drawer-open {
     width: 100%;
   }
 }
+
+.cdu-shipping-progress {
+  padding: 16px 24px;
+  border-bottom: 1px solid rgb(0 0 0 / 10%);
+}
+
+.cdu-shipping-progress__message {
+  margin: 0 0 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.cdu-shipping-progress__track {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 10%);
+}
+
+.cdu-shipping-progress__bar {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: currentColor;
+  transition: width 300ms ease;
+}
+
+.cdu-shipping-progress.is-complete
+  .cdu-shipping-progress__message {
+  font-weight: 600;
+}
