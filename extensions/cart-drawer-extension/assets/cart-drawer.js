@@ -232,6 +232,106 @@ function installDawnCartDrawerAdapter() {
     }
   }
 
+    function updateDawnCartIcon(cart) {
+    const sectionHtml =
+      cart?.sections?.["cart-icon-bubble"];
+
+    const currentCartIcon = document.querySelector(
+      "#cart-icon-bubble",
+    );
+
+    if (
+      typeof sectionHtml !== "string" ||
+      !currentCartIcon
+    ) {
+      return false;
+    }
+
+    const parsedDocument =
+      new DOMParser().parseFromString(
+        sectionHtml,
+        "text/html",
+      );
+
+    const updatedCartIcon =
+      parsedDocument.querySelector(
+        "#cart-icon-bubble",
+      );
+
+    if (!updatedCartIcon) {
+      return false;
+    }
+
+    /*
+    * Keep Dawn's existing <a> element so its click listener
+    * remains connected. Replace only its internal markup.
+    */
+    currentCartIcon.innerHTML =
+      updatedCartIcon.innerHTML;
+
+    const updatedAriaLabel =
+      updatedCartIcon.getAttribute("aria-label");
+
+    if (updatedAriaLabel) {
+      currentCartIcon.setAttribute(
+        "aria-label",
+        updatedAriaLabel,
+      );
+    }
+
+    return true;
+  }
+
+  function updateGenericCartCount(cart) {
+    const itemCount = Number(
+      cart?.item_count || 0,
+    );
+
+    /*
+    * Generic fallback for themes that expose a simple
+    * data-cart-count element.
+    */
+    document
+      .querySelectorAll("[data-cart-count]")
+      .forEach((countElement) => {
+        if (countElement.children.length === 0) {
+          countElement.textContent =
+            String(itemCount);
+        }
+
+        countElement.hidden =
+          itemCount === 0;
+      });
+
+    /*
+    * Common fallback used by Dawn-derived themes.
+    */
+    document
+      .querySelectorAll(".cart-count-bubble")
+      .forEach((bubble) => {
+        bubble.hidden = itemCount === 0;
+
+        const visibleCount =
+          bubble.querySelector(
+            "span:not(.visually-hidden)",
+          );
+
+        if (visibleCount) {
+          visibleCount.textContent =
+            String(itemCount);
+        }
+      });
+  }
+
+  function updateThemeCartUI(cart) {
+    const dawnUpdated =
+      updateDawnCartIcon(cart);
+
+    if (!dawnUpdated) {
+      updateGenericCartCount(cart);
+    }
+  }
+
   function initializeCartDrawer(root) {
     if (root.dataset.cduInitialized === "true") return;
 
@@ -507,6 +607,8 @@ function installDawnCartDrawerAdapter() {
         const cart = await response.json();
 
         renderCart(cart);
+        
+        updateThemeCartUI(cart);
 
         return cart;
       } catch (error) {
@@ -545,9 +647,14 @@ function installDawnCartDrawerAdapter() {
               "Content-Type": "application/json",
               Accept: "application/json",
             },
-            body: JSON.stringify({
+              body: JSON.stringify({
               id: lineKey,
               quantity,
+              sections: [
+                "cart-icon-bubble",
+              ],
+              sections_url:
+                window.location.pathname,
             }),
           },
         );
@@ -561,6 +668,7 @@ function installDawnCartDrawerAdapter() {
         const cart = await response.json();
 
         renderCart(cart);
+        updateThemeCartUI(cart);
 
         if (
           action === "remove" ||
