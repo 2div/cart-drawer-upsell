@@ -375,6 +375,9 @@ function installDawnCartDrawerAdapter() {
       "[data-cdu-shipping-bar]",
     );
 
+    const listenerController = new AbortController();
+    const abortSignal = listenerController.signal;
+
     document.addEventListener(
       "pointerdown",
       (event) => {
@@ -393,7 +396,7 @@ function installDawnCartDrawerAdapter() {
       },
       {
         capture: true,
-        signal,
+        signal: abortSignal,
       },
     );
 
@@ -429,9 +432,6 @@ function installDawnCartDrawerAdapter() {
     }
 
     root.dataset.cduInitialized = "true";
-
-    const listenerController = new AbortController();
-    const { signal } = listenerController;
 
     let previouslyFocusedElement = null;
     let isUpdating = false;
@@ -1019,7 +1019,7 @@ function installDawnCartDrawerAdapter() {
         });
       },
       {
-        signal,
+        signal: abortSignal,
       },
     );
 
@@ -1027,7 +1027,7 @@ function installDawnCartDrawerAdapter() {
       "shopify:cart:lines-update",
       handleStandardCartUpdate,
       {
-        signal,
+        signal: abortSignal,
       },
     );
 
@@ -1035,7 +1035,7 @@ function installDawnCartDrawerAdapter() {
       "cdu:cart:add-success",
       handleSuccessfulCartAdd,
       {
-        signal,
+        signal: abortSignal,
       },
     );
 
@@ -1043,7 +1043,7 @@ function installDawnCartDrawerAdapter() {
       "cdu:native-cart-open-request",
       handleNativeCartOpenRequest,
       {
-        signal,
+        signal: abortSignal,
       },
     );
 
@@ -1053,7 +1053,7 @@ function installDawnCartDrawerAdapter() {
         void openDrawer();
       },
       {
-        signal,
+        signal: abortSignal,
       },
     );
 
@@ -1061,7 +1061,7 @@ function installDawnCartDrawerAdapter() {
       "click",
       closeDrawer,
       {
-        signal,
+        signal: abortSignal,
       },
     );
 
@@ -1069,7 +1069,7 @@ function installDawnCartDrawerAdapter() {
       "click",
       closeDrawer,
       {
-        signal,
+        signal: abortSignal,
       },
     );
 
@@ -1084,7 +1084,7 @@ function installDawnCartDrawerAdapter() {
         }
       },
       {
-        signal,
+        signal: abortSignal,
       },
     );
 
@@ -1104,7 +1104,7 @@ function installDawnCartDrawerAdapter() {
         }, 0);
       },
       {
-        signal,
+        signal: abortSignal,
       },
     );
   }
