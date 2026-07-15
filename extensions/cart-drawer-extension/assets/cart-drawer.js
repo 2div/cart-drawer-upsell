@@ -232,6 +232,30 @@ function installDawnCartDrawerAdapter() {
     }
   }
 
+  function getFocusableElements(container) {
+    return Array.from(
+      container.querySelectorAll(
+        [
+          "a[href]",
+          "button:not([disabled])",
+          "input:not([disabled])",
+          "select:not([disabled])",
+          "textarea:not([disabled])",
+          "[tabindex]:not([tabindex='-1'])",
+        ].join(","),
+      ),
+    ).filter((element) => {
+      if (!(element instanceof HTMLElement)) {
+        return false;
+      }
+
+      return (
+        !element.hidden &&
+        element.offsetParent !== null
+      );
+    });
+  }
+
     function updateDawnCartIcon(cart) {
     const sectionHtml =
       cart?.sections?.["cart-icon-bubble"];
@@ -866,7 +890,9 @@ function installDawnCartDrawerAdapter() {
       );
 
       if (!wasOpen) {
-        closeButton.focus();
+        closeButton.focus({
+          preventScroll: true,
+        });
       }
 
       if (refresh) {
@@ -896,7 +922,79 @@ function installDawnCartDrawerAdapter() {
       );
 
       if (previouslyFocusedElement?.isConnected) {
-        previouslyFocusedElement.focus();
+        previouslyFocusedElement.focus({
+          preventScroll: true,
+        });
+      }
+    }
+
+    function keepFocusInsideDrawer(event) {
+      if (
+        event.key !== "Tab" ||
+        !root.classList.contains("is-open")
+      ) {
+        return;
+      }
+
+      const focusableElements =
+        getFocusableElements(panel);
+
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        panel.focus({
+          preventScroll: true,
+        });
+
+        return;
+      }
+
+      const firstFocusableElement =
+        focusableElements[0];
+      const lastFocusableElement =
+        focusableElements[
+          focusableElements.length - 1
+        ];
+
+      if (
+        !panel.contains(document.activeElement)
+      ) {
+        event.preventDefault();
+
+        const nextFocusableElement = event.shiftKey
+          ? lastFocusableElement
+          : firstFocusableElement;
+
+        nextFocusableElement.focus({
+          preventScroll: true,
+        });
+
+        return;
+      }
+
+      if (
+        event.shiftKey &&
+        document.activeElement ===
+          firstFocusableElement
+      ) {
+        event.preventDefault();
+
+        lastFocusableElement.focus({
+          preventScroll: true,
+        });
+
+        return;
+      }
+
+      if (
+        !event.shiftKey &&
+        document.activeElement ===
+          lastFocusableElement
+      ) {
+        event.preventDefault();
+
+        firstFocusableElement.focus({
+          preventScroll: true,
+        });
       }
     }
 
@@ -1082,6 +1180,8 @@ function installDawnCartDrawerAdapter() {
         ) {
           closeDrawer();
         }
+
+        keepFocusInsideDrawer(event);
       },
       {
         signal: abortSignal,

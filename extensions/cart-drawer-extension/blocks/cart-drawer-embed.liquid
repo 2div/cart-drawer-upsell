@@ -36,6 +36,7 @@
     aria-modal="true"
     aria-hidden="true"
     aria-labelledby="cdu-cart-title-{{ block.id }}"
+    tabindex="-1"
   >
     <header class="cdu-cart-drawer__header">
       <h2 id="cdu-cart-title-{{ block.id }}">
@@ -106,7 +107,7 @@
 
       <a
         class="cdu-cart-drawer__checkout"
-        href="/checkout"
+        href="{{ routes.root_url }}checkout"
       >
         Check out
       </a>
