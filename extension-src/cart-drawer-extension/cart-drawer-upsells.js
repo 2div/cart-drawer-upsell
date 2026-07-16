@@ -19,10 +19,14 @@
 
   function readConfig(root) {
     try {
-      return JSON.parse(
+      const parsed = JSON.parse(
         root.querySelector("[data-cdu-upsell-config]")
           ?.textContent || "{}",
       );
+
+      return typeof parsed === "string"
+        ? JSON.parse(parsed)
+        : parsed;
     } catch {
       return {
         enabled: false,

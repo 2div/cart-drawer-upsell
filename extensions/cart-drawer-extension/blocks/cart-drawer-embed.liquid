@@ -1,4 +1,4 @@
-{% assign cdu_upsell_config = app.metafields.cart_drawer_upsell.settings.value | default: '{"enabled":false,"products":[]}' | replace: '</script', '<\/script' %}
+{% assign cdu_upsell_config = app.metafields.cart_drawer_upsell.settings.value %}
 
 <div
   class="cdu-cart-drawer"
@@ -29,7 +29,11 @@
     type="application/json"
     data-cdu-upsell-config
   >
-    {{ cdu_upsell_config }}
+    {% if cdu_upsell_config != blank %}
+      {{ cdu_upsell_config | json | replace: '</script', '<\/script' }}
+    {% else %}
+      {"enabled":false,"products":[]}
+    {% endif %}
   </script>
 
   <script
