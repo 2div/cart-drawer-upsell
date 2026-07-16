@@ -39,4 +39,5 @@ async function buildAsset(name) {
 }
 
 await buildAsset("cart-drawer");
+await buildAsset("cart-drawer-compat");
 await buildAsset("cart-drawer-upsells");

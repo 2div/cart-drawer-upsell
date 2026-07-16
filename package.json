@@ -5,7 +5,7 @@
     "build": "npm run build:cart-drawer && react-router build",
     "build:web": "react-router build",
     "build:cart-drawer": "node scripts/build-cart-drawer.mjs",
-    "check:cart-drawer": "node --check extension-src/cart-drawer-extension/cart-drawer.js && node --check extension-src/cart-drawer-extension/cart-drawer-upsells.js && npm run build:cart-drawer && node --check extensions/cart-drawer-extension/assets/cart-drawer.js && node --check extensions/cart-drawer-extension/assets/cart-drawer-upsells.js",
+    "check:cart-drawer": "node --check extension-src/cart-drawer-extension/cart-drawer.js && node --check extension-src/cart-drawer-extension/cart-drawer-compat.js && node --check extension-src/cart-drawer-extension/cart-drawer-upsells.js && npm run build:cart-drawer && node --check extensions/cart-drawer-extension/assets/cart-drawer.js && node --check extensions/cart-drawer-extension/assets/cart-drawer-compat.js && node --check extensions/cart-drawer-extension/assets/cart-drawer-upsells.js",
     "dev": "shopify app dev",
     "config:link": "shopify app config link",
     "generate": "shopify app generate",

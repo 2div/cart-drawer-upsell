@@ -1,32 +1,11 @@
 (() => {
 
   const LOG_PREFIX = "[Cart Drawer Upsell]";
-  const ORIGINAL_DAWN_OPEN = "__cduOriginalOpen";
   const CART_UPDATE_ERROR =
     "The cart could not be updated.";
 
   function getRouteRoot() {
     return window.Shopify?.routes?.root || "/";
-  }
-
-  function isCartAddRequest(input, init = {}) {
-    const requestUrl =
-      input instanceof Request ? input.url : String(input);
-
-    const requestMethod = (
-      init.method ||
-      (input instanceof Request ? input.method : "GET")
-    ).toUpperCase();
-
-    if (requestMethod !== "POST") return false;
-
-    try {
-      const url = new URL(requestUrl, window.location.origin);
-
-      return /\/cart\/add(?:\.js)?\/?$/.test(url.pathname);
-    } catch {
-      return false;
-    }
   }
 
   function announceSuccessfulCartAdd() {
@@ -40,182 +19,6 @@
       ? "Sold out."
       : message || CART_UPDATE_ERROR;
   }
-
-  function installCartAddFallbacks() {
-    if (window.__cduCartAddFallbackInstalled) return;
-
-    window.__cduCartAddFallbackInstalled = true;
-
-    /*
-     * Fetch fallback.
-     * Dawn and many modern themes use fetch() for Add to Cart.
-     */
-    const originalFetch = window.fetch;
-
-    window.fetch = async function (...args) {
-      const isCartAdd = isCartAddRequest(args[0], args[1]);
-
-      const response = await Reflect.apply(
-        originalFetch,
-        this,
-        args,
-      );
-
-      if (isCartAdd && response.ok) {
-        announceSuccessfulCartAdd();
-      }
-
-      return response;
-    };
-
-    /*
-     * XMLHttpRequest fallback.
-     * Some older or custom themes still use XHR.
-     */
-    const originalOpen = XMLHttpRequest.prototype.open;
-    const originalSend = XMLHttpRequest.prototype.send;
-
-    XMLHttpRequest.prototype.open = function (
-      method,
-      url,
-      ...remainingArguments
-    ) {
-      this.__cduIsCartAddRequest = isCartAddRequest(url, {
-        method,
-      });
-
-      return originalOpen.call(
-        this,
-        method,
-        url,
-        ...remainingArguments,
-      );
-    };
-
-    XMLHttpRequest.prototype.send = function (body) {
-      if (this.__cduIsCartAddRequest) {
-        this.addEventListener(
-          "load",
-          () => {
-            if (this.status >= 200 && this.status < 300) {
-              announceSuccessfulCartAdd();
-            }
-          },
-          { once: true },
-        );
-      }
-
-      return originalSend.call(this, body);
-    };
-  }
-
-function restoreDawnCartDrawer(nativeDrawer) {
-  const originalOpen =
-    nativeDrawer[ORIGINAL_DAWN_OPEN];
-
-  if (typeof originalOpen !== "function") {
-    return;
-  }
-
-  nativeDrawer.open = originalOpen;
-
-  delete nativeDrawer[ORIGINAL_DAWN_OPEN];
-  delete nativeDrawer.dataset.cduAdapterInstalled;
-}
-
-function patchDawnCartDrawers() {
-  const appDrawer = document.querySelector(
-    "[data-cdu-cart-drawer]",
-  );
-
-  if (!appDrawer) return;
-
-  const shouldReplaceNativeDrawer =
-    appDrawer.dataset.cduReplaceNativeDrawer === "true";
-
-  document
-    .querySelectorAll("cart-drawer")
-    .forEach((nativeDrawer) => {
-      if (!shouldReplaceNativeDrawer) {
-        restoreDawnCartDrawer(nativeDrawer);
-        return;
-      }
-
-      if (
-        nativeDrawer.dataset.cduAdapterInstalled ===
-        "true"
-      ) {
-        return;
-      }
-
-      /*
-       * The HTML element can exist before Dawn registers
-       * the cart-drawer custom element.
-       */
-      if (typeof nativeDrawer.open !== "function") {
-        return;
-      }
-
-      nativeDrawer.dataset.cduAdapterInstalled =
-        "true";
-
-      nativeDrawer[ORIGINAL_DAWN_OPEN] =
-        nativeDrawer.open;
-
-      nativeDrawer.open = function () {
-        document.dispatchEvent(
-          new CustomEvent(
-            "cdu:native-cart-open-request",
-            {
-              detail: {
-                source: "dawn",
-              },
-            },
-          ),
-        );
-      };
-
-      if (
-        nativeDrawer.classList.contains("active") &&
-        typeof nativeDrawer.close === "function"
-      ) {
-        nativeDrawer.close();
-      }
-    });
-}
-
-function installDawnCartDrawerAdapter() {
-  /*
-   * Try immediately in case Dawn is already initialized.
-   */
-  patchDawnCartDrawers();
-
-  /*
-   * Also retry after Dawn defines its custom element.
-   * whenDefined resolves immediately if it is already defined.
-   */
-  if (window.__cduWaitingForDawnCartDrawer) {
-    return;
-  }
-
-  window.__cduWaitingForDawnCartDrawer = true;
-
-  customElements
-    .whenDefined("cart-drawer")
-    .then(() => {
-      window.__cduWaitingForDawnCartDrawer = false;
-
-      patchDawnCartDrawers();
-    })
-    .catch((error) => {
-      window.__cduWaitingForDawnCartDrawer = false;
-
-      console.error(
-        `${LOG_PREFIX} Dawn adapter failed:`,
-        error,
-      );
-    });
-}
 
   function escapeHtml(value = "") {
     const element = document.createElement("div");
@@ -1090,7 +893,6 @@ function installDawnCartDrawerAdapter() {
           if (!root.isConnected) {
             closeDrawer();
             listenerController.abort();
-            installDawnCartDrawerAdapter();
           }
         }, 0);
       },
@@ -1103,11 +905,7 @@ function installDawnCartDrawerAdapter() {
         "[data-cdu-cart-drawer]",
       )
       .forEach(initializeCartDrawer);
-
-    installDawnCartDrawerAdapter();
   }
-
-  installCartAddFallbacks();
 
   if (document.readyState === "loading") {
     document.addEventListener(
