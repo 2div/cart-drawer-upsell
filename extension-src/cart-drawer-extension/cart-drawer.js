@@ -31,7 +31,7 @@
 
   function announceSuccessfulCartAdd() {
     document.dispatchEvent(
-      new CustomEvent("cdu:cart:add-success"),
+      new Event("cdu:cart:add-success"),
     );
   }
 
@@ -575,6 +575,7 @@ function installDawnCartDrawerAdapter() {
       }
 
       content.innerHTML = `<div class="cdu-cart-drawer__items">${cart.items
+            .filter((item) => item.quantity > 0)
             .map((item) => {
               const productTitle =
                 item.product_title ||
@@ -792,6 +793,8 @@ function installDawnCartDrawerAdapter() {
         await refreshCart({
           showLoading: false,
         });
+
+        announceSuccessfulCartAdd();
       } finally {
         setUpdating(false);
       }

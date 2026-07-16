@@ -100,13 +100,16 @@
       return;
     }
 
+    const cartItems = (cart.items || []).filter(
+      (item) => Number(item.quantity) > 0,
+    );
     const cartProductIds = new Set(
-      (cart.items || []).map((item) =>
+      cartItems.map((item) =>
         String(item.product_id),
       ),
     );
     const cartHandles = new Set(
-      (cart.items || []).map((item) => item.handle),
+      cartItems.map((item) => item.handle),
     );
     const products = Array.isArray(config.products)
       ? config.products.filter((product) => {
