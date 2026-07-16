@@ -603,7 +603,7 @@ function installDawnCartDrawerAdapter() {
                 cart.currency,
               )}</p><div class="cdu-ci__b"><div class="cdu-q" role="group" aria-label="Quantity for ${escapedTitle}"><button type="button" class="cdu-q__b" data-cdu-action="decrease" data-key="${escapedLineKey}" data-qty="${lowerQuantity}" aria-label="Decrease quantity of ${escapedTitle}">&minus;</button><span class="cdu-q__v">${item.quantity}</span><button type="button" class="cdu-q__b" data-cdu-action="increase" data-key="${escapedLineKey}" data-qty="${
                 item.quantity + 1
-              }" aria-label="Increase quantity of ${escapedTitle}">+</button></div><button type="button" class="cdu-ci__r" data-cdu-action="remove" data-key="${escapedLineKey}" data-qty="0">Remove</button></div></div></article>`;
+              }" aria-label="Increase quantity of ${escapedTitle}">+</button></div><button type="button" class="cdu-ci__r" data-cdu-action="remove" data-key="${escapedLineKey}" data-qty="0" aria-label="Remove ${escapedTitle}" title="Remove"></button></div></div></article>`;
             })
             .join("")}</div>`;
 

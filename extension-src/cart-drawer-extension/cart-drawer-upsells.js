@@ -1,5 +1,6 @@
 (() => {
   const rootSelector = "[data-cdu-cart-drawer]";
+  const unavailableVariants = new Set();
 
   function getRouteRoot() {
     return window.Shopify?.routes?.root || "/";
@@ -66,6 +67,20 @@
     return response.json();
   }
 
+  async function readAddError(response) {
+    try {
+      const data = await response.json();
+
+      return data.description || data.message || "";
+    } catch {
+      return "";
+    }
+  }
+
+  function isAvailabilityError(message) {
+    return /sold|stock|inventory|available/i.test(message);
+  }
+
   function renderUpsells(root, cart) {
     const container = root.querySelector(
       "[data-cdu-upsells]",
@@ -102,6 +117,10 @@
           .map((product) => {
             const title = escapeHtml(product.title);
             const price = formatPrice(product.price);
+            const variantId = getIdNumber(product.variantId);
+            const isUnavailable =
+              product.availableForSale === false ||
+              unavailableVariants.has(variantId);
             const image = product.image?.originalSrc
               ? `<img class="cdu-u__img" src="${escapeHtml(
                   product.image.originalSrc,
@@ -110,9 +129,13 @@
                 )}" width="56" height="56" loading="lazy">`
               : '<span class="cdu-u__img cdu-u__img--empty" aria-hidden="true"></span>';
 
-            return `<article class="cdu-u__i">${image}<div class="cdu-u__d"><p class="cdu-u__t">${title}</p>${price ? `<p class="cdu-u__p">${escapeHtml(price)}</p>` : ""}</div><button type="button" class="cdu-u__b" data-cdu-upsell-add="${escapeHtml(
-              getIdNumber(product.variantId),
-            )}">Add</button></article>`;
+            return `<article class="cdu-u__i${
+              isUnavailable ? " is-unavailable" : ""
+            }">${image}<div class="cdu-u__d"><p class="cdu-u__t">${title}</p>${price ? `<p class="cdu-u__p">${escapeHtml(price)}</p>` : ""}${isUnavailable ? '<p class="cdu-u__m">Sold out</p>' : ""}</div><button type="button" class="cdu-u__b" data-cdu-upsell-add="${escapeHtml(
+              variantId,
+            )}" ${isUnavailable ? "disabled" : ""}>${
+              isUnavailable ? "Sold out" : "Add"
+            }</button></article>`;
           })
           .join("")}</section>`
       : "";
@@ -157,14 +180,28 @@
         },
       );
 
-      button.disabled = false;
       button.classList.remove("is-loading");
       button.removeAttribute("aria-busy");
-      button.textContent = response.ok ? "Added" : "Try again";
 
       if (response.ok) {
+        button.textContent = "Added";
         await refreshUpsells(root);
       } else {
+        const errorMessage = await readAddError(response);
+
+        if (isAvailabilityError(errorMessage)) {
+          unavailableVariants.add(button.dataset.cduUpsellAdd);
+          button.disabled = true;
+          button.classList.add("is-unavailable");
+          button.textContent = "Sold out";
+          button
+            .closest(".cdu-u__i")
+            ?.classList.add("is-unavailable");
+          return;
+        }
+
+        button.disabled = false;
+        button.textContent = "Try again";
         window.setTimeout(() => {
           button.textContent = label;
         }, 1500);
