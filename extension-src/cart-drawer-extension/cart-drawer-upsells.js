@@ -163,6 +163,10 @@
       attributes: true,
       attributeFilter: ["class"],
     });
+
+    if (root.classList.contains("is-open")) {
+      void refreshUpsells(root);
+    }
   }
 
   function initializeAllUpsells() {

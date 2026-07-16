@@ -33,6 +33,21 @@ type GraphQlUserError = {
   message: string;
 };
 
+type UpsellProductNode = {
+  id: string;
+  title?: string | null;
+  handle?: string | null;
+  featuredImage?: {
+    altText?: string | null;
+    url?: string | null;
+  } | null;
+  variants?: {
+    nodes?: {
+      id?: string | null;
+    }[];
+  } | null;
+};
+
 const DEFAULT_UPSELL_CONFIG: UpsellConfig = {
   enabled: false,
   products: [],
@@ -61,6 +76,80 @@ function parseUpsellConfig(value: unknown): UpsellConfig {
           .slice(0, 4)
       : [],
   };
+}
+
+async function enrichProductsWithVariants(
+  admin: Awaited<
+    ReturnType<typeof authenticate.admin>
+  >["admin"],
+  products: UpsellProduct[],
+) {
+  if (products.length === 0) return products;
+
+  const response = await admin.graphql(
+    `#graphql
+      query CartDrawerUpsellProducts($ids: [ID!]!) {
+        nodes(ids: $ids) {
+          ... on Product {
+            id
+            title
+            handle
+            featuredImage {
+              altText
+              url
+            }
+            variants(first: 1) {
+              nodes {
+                id
+              }
+            }
+          }
+        }
+      }`,
+    {
+      variables: {
+        ids: products.map((product) => product.id),
+      },
+    },
+  );
+  const responseJson = await response.json();
+  const productsById = new Map<string, UpsellProductNode>();
+
+  for (const node of responseJson.data?.nodes ?? []) {
+    if (node?.id) {
+      productsById.set(node.id, node);
+    }
+  }
+
+  return products.map((product) => {
+    const node = productsById.get(product.id);
+    const variantId =
+      product.variantId ||
+      node?.variants?.nodes?.[0]?.id ||
+      undefined;
+    const hasImage =
+      Boolean(product.image) ||
+      Boolean(node?.featuredImage?.url);
+    const image = hasImage
+      ? {
+          altText:
+            product.image?.altText ??
+            node?.featuredImage?.altText,
+          originalSrc:
+            product.image?.originalSrc ||
+            node?.featuredImage?.url ||
+            "",
+        }
+      : null;
+
+    return {
+      id: product.id,
+      title: node?.title || product.title,
+      handle: node?.handle || product.handle,
+      variantId,
+      image,
+    };
+  });
 }
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -112,6 +201,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       };
     }
   }
+
+  products = await enrichProductsWithVariants(admin, products);
 
   const appInstallationResponse = await admin.graphql(
     `#graphql
