@@ -17,6 +17,22 @@
     return String(id).split("/").pop();
   }
 
+  function formatPrice(price) {
+    if (!price?.amount) return "";
+
+    try {
+      return new Intl.NumberFormat(
+        document.documentElement.lang || "en",
+        {
+          style: "currency",
+          currency: price.currencyCode || "USD",
+        },
+      ).format(Number(price.amount));
+    } catch {
+      return price.amount;
+    }
+  }
+
   function readConfig(root) {
     try {
       const parsed = JSON.parse(
@@ -85,17 +101,18 @@
       ? `<section class="cdu-u"><h3 class="cdu-u__h">You may also like</h3>${products
           .map((product) => {
             const title = escapeHtml(product.title);
+            const price = formatPrice(product.price);
             const image = product.image?.originalSrc
               ? `<img class="cdu-u__img" src="${escapeHtml(
                   product.image.originalSrc,
                 )}" alt="${escapeHtml(
                   product.image.altText || product.title,
                 )}" width="56" height="56" loading="lazy">`
-              : "";
+              : '<span class="cdu-u__img cdu-u__img--empty" aria-hidden="true"></span>';
 
-            return `<article class="cdu-u__i">${image}<div><p class="cdu-u__t">${title}</p><button type="button" class="cdu-u__b" data-cdu-upsell-add="${escapeHtml(
+            return `<article class="cdu-u__i">${image}<div class="cdu-u__d"><p class="cdu-u__t">${title}</p>${price ? `<p class="cdu-u__p">${escapeHtml(price)}</p>` : ""}</div><button type="button" class="cdu-u__b" data-cdu-upsell-add="${escapeHtml(
               getIdNumber(product.variantId),
-            )}">Add</button></div></article>`;
+            )}">Add</button></article>`;
           })
           .join("")}</section>`
       : "";
@@ -119,7 +136,11 @@
 
       if (!button || !root.contains(button)) return;
 
+      const label = button.textContent;
       button.disabled = true;
+      button.classList.add("is-loading");
+      button.setAttribute("aria-busy", "true");
+      button.textContent = "Adding...";
 
       const response = await fetch(
         `${getRouteRoot()}cart/add.js`,
@@ -137,9 +158,16 @@
       );
 
       button.disabled = false;
+      button.classList.remove("is-loading");
+      button.removeAttribute("aria-busy");
+      button.textContent = response.ok ? "Added" : "Try again";
 
       if (response.ok) {
         await refreshUpsells(root);
+      } else {
+        window.setTimeout(() => {
+          button.textContent = label;
+        }, 1500);
       }
     });
 

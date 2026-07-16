@@ -269,46 +269,82 @@ html.cdu-cart-drawer-open {
 
 .cdu-u {
   display: grid;
-  gap: 12px;
-  margin-top: 24px;
-  padding-top: 20px;
+  gap: 10px;
+  margin-top: 22px;
+  padding-top: 18px;
   border-top: 1px solid rgb(0 0 0 / 10%);
 }
 
 .cdu-u__h {
-  margin: 0;
+  margin: 0 0 2px;
   font-size: 16px;
+  line-height: 1.25;
 }
 
 .cdu-u__i {
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr);
+  grid-template-columns: 56px minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
+  min-height: 72px;
+  padding: 10px;
+  border: 1px solid rgb(0 0 0 / 8%);
+  border-radius: 6px;
+  background: rgb(0 0 0 / 2%);
 }
 
 .cdu-u__img {
   width: 56px;
   height: 56px;
   object-fit: cover;
+  border: 1px solid rgb(0 0 0 / 6%);
   background: #f5f5f5;
 }
 
+.cdu-u__img--empty {
+  display: block;
+}
+
+.cdu-u__d {
+  min-width: 0;
+}
+
 .cdu-u__t {
-  margin: 0 0 8px;
+  margin: 0;
   font-size: 14px;
+  font-weight: 600;
   line-height: 1.3;
 }
 
+.cdu-u__p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+  opacity: 0.78;
+}
+
 .cdu-u__b {
-  padding: 7px 12px;
+  min-width: 64px;
+  padding: 9px 12px;
   border: 1px solid currentColor;
   border-radius: 4px;
-  background: transparent;
-  color: inherit;
+  background: var(--cdu-text);
+  color: var(--cdu-background);
   font: inherit;
   font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
   cursor: pointer;
+}
+
+.cdu-u__b:hover {
+  opacity: 0.82;
+}
+
+.cdu-u__b:disabled {
+  cursor: wait;
+  opacity: 0.58;
 }
 
 :dir(rtl) .cdu-ci__r {

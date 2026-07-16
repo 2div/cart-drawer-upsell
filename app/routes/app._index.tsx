@@ -17,6 +17,10 @@ type UpsellProduct = {
   title: string;
   handle: string;
   variantId?: string;
+  price?: {
+    amount: string;
+    currencyCode?: string;
+  } | null;
   image?: {
     altText?: string | null;
     originalSrc: string;
@@ -44,6 +48,7 @@ type UpsellProductNode = {
   variants?: {
     nodes?: {
       id?: string | null;
+      price?: string | null;
     }[];
   } | null;
 };
@@ -70,7 +75,9 @@ function parseUpsellConfig(value: unknown): UpsellConfig {
               typeof product.title === "string" &&
               typeof product.handle === "string" &&
               (typeof product.variantId === "string" ||
-                typeof product.variantId === "undefined")
+                typeof product.variantId === "undefined") &&
+              (typeof product.price === "object" ||
+                typeof product.price === "undefined")
             );
           })
           .slice(0, 4)
@@ -89,6 +96,9 @@ async function enrichProductsWithVariants(
   const response = await admin.graphql(
     `#graphql
       query CartDrawerUpsellProducts($ids: [ID!]!) {
+        shop {
+          currencyCode
+        }
         nodes(ids: $ids) {
           ... on Product {
             id
@@ -101,6 +111,7 @@ async function enrichProductsWithVariants(
             variants(first: 1) {
               nodes {
                 id
+                price
               }
             }
           }
@@ -113,6 +124,7 @@ async function enrichProductsWithVariants(
     },
   );
   const responseJson = await response.json();
+  const currencyCode = responseJson.data?.shop?.currencyCode;
   const productsById = new Map<string, UpsellProductNode>();
 
   for (const node of responseJson.data?.nodes ?? []) {
@@ -127,6 +139,15 @@ async function enrichProductsWithVariants(
       product.variantId ||
       node?.variants?.nodes?.[0]?.id ||
       undefined;
+    const amount = node?.variants?.nodes?.[0]?.price;
+    const price =
+      product.price ||
+      (amount
+        ? {
+            amount,
+            currencyCode,
+          }
+        : null);
     const hasImage =
       Boolean(product.image) ||
       Boolean(node?.featuredImage?.url);
@@ -147,6 +168,7 @@ async function enrichProductsWithVariants(
       title: node?.title || product.title,
       handle: node?.handle || product.handle,
       variantId,
+      price,
       image,
     };
   });
