@@ -82,6 +82,10 @@
   }
 
   function getAvailabilityMessage(message) {
+    if (/already sold out/i.test(message)) {
+      return "This item is already sold out.";
+    }
+
     return message || "This item is currently unavailable.";
   }
 

@@ -35,6 +35,12 @@
     );
   }
 
+  function formatCartErrorMessage(message) {
+    return /already sold out/i.test(message)
+      ? "Sold out."
+      : message || CART_UPDATE_ERROR;
+  }
+
   function installCartAddFallbacks() {
     if (window.__cduCartAddFallbackInstalled) return;
 
@@ -609,7 +615,7 @@ function installDawnCartDrawerAdapter() {
                 cart.currency,
               )}</p><div class="cdu-ci__b"><div class="cdu-q" role="group" aria-label="Quantity for ${escapedTitle}"><button type="button" class="cdu-q__b" data-cdu-action="decrease" data-key="${escapedLineKey}" data-qty="${lowerQuantity}" aria-label="Decrease quantity of ${escapedTitle}">&minus;</button><span class="cdu-q__v">${item.quantity}</span><button type="button" class="cdu-q__b" data-cdu-action="increase" data-key="${escapedLineKey}" data-qty="${
                 item.quantity + 1
-              }" aria-label="Increase quantity of ${escapedTitle}">+</button></div><button type="button" class="cdu-ci__r" data-cdu-action="remove" data-key="${escapedLineKey}" data-qty="0" aria-label="Remove ${escapedTitle}" title="Remove"></button></div><p class="cdu-ci__m" data-cdu-line-message="${escapedLineKey}" role="status" aria-live="polite"${
+              }" aria-label="Increase quantity of ${escapedTitle}">+</button></div><button type="button" class="cdu-ci__r" data-cdu-action="remove" data-key="${escapedLineKey}" data-qty="0" aria-label="Remove ${escapedTitle}" title="Remove"></button></div><p class="cdu-ci__m" role="status" aria-live="polite"${
                 lineMessage ? "" : " hidden"
               }>${escapedItemError}</p></div></article>`;
             })
@@ -759,9 +765,11 @@ function installDawnCartDrawerAdapter() {
         );
       } catch (error) {
         const message =
-          error instanceof Error
-            ? error.message
-            : CART_UPDATE_ERROR;
+          formatCartErrorMessage(
+            error instanceof Error
+              ? error.message
+              : CART_UPDATE_ERROR,
+          );
         const isExpectedCartError =
           error?.status >= 400 && error.status < 500;
 
