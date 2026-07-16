@@ -1,356 +1,376 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type {
   ActionFunctionArgs,
   HeadersFunction,
   LoaderFunctionArgs,
 } from "react-router";
-import { useFetcher } from "react-router";
+import { useFetcher, useLoaderData } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
-import { authenticate } from "../shopify.server";
 import { boundary } from "@shopify/shopify-app-react-router/server";
+import { authenticate } from "../shopify.server";
+
+const UPSELL_CONFIG_NAMESPACE = "cart_drawer_upsell";
+const UPSELL_CONFIG_KEY = "settings";
+
+type UpsellProduct = {
+  id: string;
+  title: string;
+  handle: string;
+  image?: {
+    altText?: string | null;
+    originalSrc: string;
+  } | null;
+};
+
+type UpsellConfig = {
+  enabled: boolean;
+  products: UpsellProduct[];
+};
+
+type GraphQlUserError = {
+  field?: string[] | null;
+  message: string;
+};
+
+const DEFAULT_UPSELL_CONFIG: UpsellConfig = {
+  enabled: false,
+  products: [],
+};
+
+function parseUpsellConfig(value: unknown): UpsellConfig {
+  if (!value || typeof value !== "object") {
+    return DEFAULT_UPSELL_CONFIG;
+  }
+
+  const parsed = value as Partial<UpsellConfig>;
+
+  return {
+    enabled: parsed.enabled === true,
+    products: Array.isArray(parsed.products)
+      ? parsed.products
+          .filter((product): product is UpsellProduct => {
+            return (
+              typeof product?.id === "string" &&
+              typeof product.title === "string" &&
+              typeof product.handle === "string"
+            );
+          })
+          .slice(0, 4)
+      : [],
+  };
+}
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
+  const { admin } = await authenticate.admin(request);
 
-  return null;
+  const response = await admin.graphql(
+    `#graphql
+      query CartDrawerUpsellSettings {
+        currentAppInstallation {
+          id
+          metafield(
+            namespace: "${UPSELL_CONFIG_NAMESPACE}"
+            key: "${UPSELL_CONFIG_KEY}"
+          ) {
+            jsonValue
+          }
+        }
+      }`,
+  );
+  const responseJson = await response.json();
+  const appInstallation =
+    responseJson.data?.currentAppInstallation;
+
+  return {
+    config: parseUpsellConfig(
+      appInstallation?.metafield?.jsonValue,
+    ),
+  };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
-  const color = ["Red", "Orange", "Yellow", "Green"][
-    Math.floor(Math.random() * 4)
-  ];
+  const formData = await request.formData();
+  const enabled = formData.get("enabled") === "true";
+  const productsValue = formData.get("products");
+
+  let products: UpsellProduct[] = [];
+
+  if (typeof productsValue === "string") {
+    try {
+      products = parseUpsellConfig({
+        enabled,
+        products: JSON.parse(productsValue),
+      }).products;
+    } catch {
+      return {
+        ok: false,
+        errors: ["Selected products could not be saved."],
+      };
+    }
+  }
+
+  const appInstallationResponse = await admin.graphql(
+    `#graphql
+      query CartDrawerUpsellAppInstallation {
+        currentAppInstallation {
+          id
+        }
+      }`,
+  );
+  const appInstallationJson =
+    await appInstallationResponse.json();
+  const ownerId =
+    appInstallationJson.data?.currentAppInstallation?.id;
+
+  if (!ownerId) {
+    return {
+      ok: false,
+      errors: ["Could not find the current app installation."],
+    };
+  }
+
+  const config: UpsellConfig = {
+    enabled,
+    products,
+  };
+
   const response = await admin.graphql(
     `#graphql
-      mutation populateProduct($product: ProductCreateInput!) {
-        productCreate(product: $product) {
-          product {
+      mutation CartDrawerUpsellSettingsSave(
+        $metafields: [MetafieldsSetInput!]!
+      ) {
+        metafieldsSet(metafields: $metafields) {
+          metafields {
             id
-            title
-            handle
-            status
-            variants(first: 10) {
-              edges {
-                node {
-                  id
-                  price
-                  barcode
-                  createdAt
-                }
-              }
-            }
-            demoInfo: metafield(namespace: "$app", key: "demo_info") {
-              jsonValue
-            }
+            namespace
+            key
+          }
+          userErrors {
+            field
+            message
           }
         }
       }`,
     {
       variables: {
-        product: {
-          title: `${color} Snowboard`,
-          metafields: [
-            {
-              namespace: "$app",
-              key: "demo_info",
-              value: "Created by React Router Template",
-            },
-          ],
-        },
+        metafields: [
+          {
+            ownerId,
+            namespace: UPSELL_CONFIG_NAMESPACE,
+            key: UPSELL_CONFIG_KEY,
+            type: "json",
+            value: JSON.stringify(config),
+          },
+        ],
       },
     },
   );
   const responseJson = await response.json();
+  const userErrors: GraphQlUserError[] =
+    responseJson.data?.metafieldsSet?.userErrors ?? [];
 
-  const product = responseJson.data!.productCreate!.product!;
-  const variantId = product.variants.edges[0]!.node!.id!;
-
-  const variantResponse = await admin.graphql(
-    `#graphql
-    mutation shopifyReactRouterTemplateUpdateVariant($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
-      productVariantsBulkUpdate(productId: $productId, variants: $variants) {
-        productVariants {
-          id
-          price
-          barcode
-          createdAt
-        }
-      }
-    }`,
-    {
-      variables: {
-        productId: product.id,
-        variants: [{ id: variantId, price: "100.00" }],
-      },
-    },
-  );
-
-  const variantResponseJson = await variantResponse.json();
-
-  const metaobjectResponse = await admin.graphql(
-    `#graphql
-    mutation shopifyReactRouterTemplateUpsertMetaobject($handle: MetaobjectHandleInput!, $metaobject: MetaobjectUpsertInput!) {
-      metaobjectUpsert(handle: $handle, metaobject: $metaobject) {
-        metaobject {
-          id
-          handle
-          title: field(key: "title") {
-            jsonValue
-          }
-          description: field(key: "description") {
-            jsonValue
-          }
-        }
-        userErrors {
-          field
-          message
-        }
-      }
-    }`,
-    {
-      variables: {
-        handle: {
-          type: "$app:example",
-          handle: "demo-entry",
-        },
-        metaobject: {
-          fields: [
-            { key: "title", value: "Demo Entry" },
-            {
-              key: "description",
-              value:
-                "This metaobject was created by the Shopify app template to demonstrate the metaobject API.",
-            },
-          ],
-        },
-      },
-    },
-  );
-
-  const metaobjectResponseJson = await metaobjectResponse.json();
+  if (userErrors.length > 0) {
+    return {
+      ok: false,
+      errors: userErrors.map((error) => error.message),
+    };
+  }
 
   return {
-    product: responseJson!.data!.productCreate!.product,
-    variant:
-      variantResponseJson!.data!.productVariantsBulkUpdate!.productVariants,
-    metaobject:
-      metaobjectResponseJson!.data!.metaobjectUpsert!.metaobject,
+    ok: true,
+    config,
   };
 };
 
 export default function Index() {
+  const { config } = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
-
   const shopify = useAppBridge();
-  const isLoading =
-    ["loading", "submitting"].includes(fetcher.state) &&
-    fetcher.formMethod === "POST";
+  const [enabled, setEnabled] = useState(config.enabled);
+  const [products, setProducts] = useState<UpsellProduct[]>(
+    config.products,
+  );
+
+  const isSaving = fetcher.state !== "idle";
+  const savedConfig =
+    fetcher.data && "config" in fetcher.data
+      ? fetcher.data.config
+      : null;
+  const errors =
+    fetcher.data && "errors" in fetcher.data
+      ? fetcher.data.errors
+      : [];
 
   useEffect(() => {
-    if (fetcher.data?.product?.id) {
-      shopify.toast.show("Product created");
+    if (savedConfig) {
+      setEnabled(savedConfig.enabled);
+      setProducts(savedConfig.products);
+      shopify.toast.show("Upsell settings saved");
     }
-  }, [fetcher.data?.product?.id, shopify]);
+  }, [savedConfig, shopify]);
 
-  const generateProduct = () => fetcher.submit({}, { method: "POST" });
+  useEffect(() => {
+    if (errors?.length) {
+      shopify.toast.show(errors[0], {
+        isError: true,
+      });
+    }
+  }, [errors, shopify]);
+
+  const productSelectionIds = useMemo(() => {
+    return products.map((product) => ({
+      id: product.id,
+    }));
+  }, [products]);
+
+  async function chooseProducts() {
+    const selection = await shopify.resourcePicker({
+      type: "product",
+      action: "select",
+      multiple: 4,
+      selectionIds: productSelectionIds,
+      filter: {
+        variants: false,
+        archived: false,
+      },
+    });
+
+    if (!selection) return;
+
+    setProducts(
+      selection.selection.map((product) => ({
+        id: product.id,
+        title: product.title,
+        handle: product.handle,
+        image: product.images?.[0]
+          ? {
+              altText: product.images[0].altText,
+              originalSrc: product.images[0].originalSrc,
+            }
+          : null,
+      })),
+    );
+  }
+
+  function removeProduct(productId: string) {
+    setProducts((currentProducts) =>
+      currentProducts.filter(
+        (product) => product.id !== productId,
+      ),
+    );
+  }
 
   return (
-    <s-page heading="Shopify app template">
-      <s-button slot="primary-action" onClick={generateProduct}>
-        Generate a product
-      </s-button>
+    <s-page heading="Cart Drawer Upsell">
+      <s-section heading="Upsell products">
+        <s-stack direction="block" gap="base">
+          <s-paragraph>
+            Choose products that can appear in the cart drawer. This
+            saves the configuration to app data so the theme app
+            extension can read it without editing the merchant theme.
+          </s-paragraph>
 
-      <s-section heading="Congrats on creating a new Shopify app 🎉">
-        <s-paragraph>
-          This embedded app template uses{" "}
-          <s-link
-            href="https://shopify.dev/docs/apps/tools/app-bridge"
-            target="_blank"
-          >
-            App Bridge
-          </s-link>{" "}
-          interface examples like an{" "}
-          <s-link href="/app/additional">additional page in the app nav</s-link>
-          , as well as an{" "}
-          <s-link
-            href="https://shopify.dev/docs/api/admin-graphql"
-            target="_blank"
-          >
-            Admin GraphQL
-          </s-link>{" "}
-          mutation demo, to provide a starting point for app development.
-        </s-paragraph>
-      </s-section>
-      <s-section heading="Get started with products">
-        <s-paragraph>
-          Generate a product with GraphQL and get the JSON output for that
-          product. Learn more about the{" "}
-          <s-link
-            href="https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate"
-            target="_blank"
-          >
-            productCreate
-          </s-link>{" "}
-          mutation in our API references. Includes a product{" "}
-          <s-link
-            href="https://shopify.dev/docs/apps/build/custom-data/metafields"
-            target="_blank"
-          >
-            metafield
-          </s-link>{" "}
-          and{" "}
-          <s-link
-            href="https://shopify.dev/docs/apps/build/custom-data/metaobjects"
-            target="_blank"
-          >
-            metaobject
-          </s-link>
-          .
-        </s-paragraph>
-        <s-stack direction="inline" gap="base">
-          <s-button
-            onClick={generateProduct}
-            {...(isLoading ? { loading: true } : {})}
-          >
-            Generate a product
-          </s-button>
-          {fetcher.data?.product && (
-            <s-button
-              onClick={() => {
-                shopify.intents.invoke?.("edit:shopify/Product", {
-                  value: fetcher.data?.product?.id,
-                });
-              }}
-              target="_blank"
-              variant="tertiary"
+          <fetcher.Form method="post">
+            <input
+              type="hidden"
+              name="enabled"
+              value={enabled ? "true" : "false"}
+            />
+            <input
+              type="hidden"
+              name="products"
+              value={JSON.stringify(products)}
+            />
+
+            <s-stack direction="block" gap="base">
+              <s-checkbox
+                checked={enabled}
+                label="Enable upsells in the cart drawer"
+                onChange={(event) => {
+                  setEnabled(event.currentTarget.checked);
+                }}
+              />
+
+              <s-stack direction="inline" gap="base">
+                <s-button
+                  type="button"
+                  onClick={chooseProducts}
+                >
+                  Select products
+                </s-button>
+                <s-button
+                  type="submit"
+                  variant="primary"
+                  {...(isSaving ? { loading: true } : {})}
+                >
+                  Save settings
+                </s-button>
+              </s-stack>
+            </s-stack>
+          </fetcher.Form>
+
+          {products.length === 0 ? (
+            <s-box
+              padding="base"
+              borderWidth="base"
+              borderRadius="base"
+              background="subdued"
             >
-              Edit product
-            </s-button>
+              <s-paragraph>
+                No upsell products selected yet.
+              </s-paragraph>
+            </s-box>
+          ) : (
+            <s-stack direction="block" gap="small">
+              {products.map((product) => (
+                <s-box
+                  key={product.id}
+                  padding="base"
+                  borderWidth="base"
+                  borderRadius="base"
+                >
+                  <s-stack
+                    direction="inline"
+                    gap="base"
+                    alignItems="center"
+                    justifyContent="space-between"
+                  >
+                    <s-stack direction="block" gap="small">
+                      <s-text>{product.title}</s-text>
+                      <s-text color="subdued">
+                        {product.handle}
+                      </s-text>
+                    </s-stack>
+                    <s-button
+                      type="button"
+                      variant="tertiary"
+                      onClick={() => {
+                        removeProduct(product.id);
+                      }}
+                    >
+                      Remove
+                    </s-button>
+                  </s-stack>
+                </s-box>
+              ))}
+            </s-stack>
           )}
         </s-stack>
-        {fetcher.data?.product && (
-          <s-section heading="productCreate mutation">
-            <s-stack direction="block" gap="base">
-              <s-box
-                padding="base"
-                borderWidth="base"
-                borderRadius="base"
-                background="subdued"
-              >
-                <pre
-                  style={{
-                    margin: 0,
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
-                  }}
-                >
-                  <code>{JSON.stringify(fetcher.data.product, null, 2)}</code>
-                </pre>
-              </s-box>
-
-              <s-heading>productVariantsBulkUpdate mutation</s-heading>
-              <s-box
-                padding="base"
-                borderWidth="base"
-                borderRadius="base"
-                background="subdued"
-              >
-                <pre
-                  style={{
-                    margin: 0,
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
-                  }}
-                >
-                  <code>{JSON.stringify(fetcher.data.variant, null, 2)}</code>
-                </pre>
-              </s-box>
-
-              <s-heading>metaobjectUpsert mutation</s-heading>
-              <s-box
-                padding="base"
-                borderWidth="base"
-                borderRadius="base"
-                background="subdued"
-              >
-                <pre
-                  style={{
-                    margin: 0,
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
-                  }}
-                >
-                  <code>
-                    {JSON.stringify(fetcher.data.metaobject, null, 2)}
-                  </code>
-                </pre>
-              </s-box>
-            </s-stack>
-          </s-section>
-        )}
       </s-section>
 
-      <s-section slot="aside" heading="App template specs">
-        <s-paragraph>
-          <s-text>Framework: </s-text>
-          <s-link href="https://reactrouter.com/" target="_blank">
-            React Router
-          </s-link>
-        </s-paragraph>
-        <s-paragraph>
-          <s-text>Interface: </s-text>
-          <s-link
-            href="https://shopify.dev/docs/api/app-home/using-polaris-components"
-            target="_blank"
-          >
-            Polaris web components
-          </s-link>
-        </s-paragraph>
-        <s-paragraph>
-          <s-text>API: </s-text>
-          <s-link
-            href="https://shopify.dev/docs/api/admin-graphql"
-            target="_blank"
-          >
-            GraphQL
-          </s-link>
-        </s-paragraph>
-        <s-paragraph>
-          <s-text>Custom data: </s-text>
-          <s-link
-            href="https://shopify.dev/docs/apps/build/custom-data"
-            target="_blank"
-          >
-            Metafields &amp; metaobjects
-          </s-link>
-        </s-paragraph>
-        <s-paragraph>
-          <s-text>Database: </s-text>
-          <s-link href="https://www.prisma.io/" target="_blank">
-            Prisma
-          </s-link>
-        </s-paragraph>
-      </s-section>
-
-      <s-section slot="aside" heading="Next steps">
+      <s-section slot="aside" heading="Status">
         <s-unordered-list>
           <s-list-item>
-            Build an{" "}
-            <s-link
-              href="https://shopify.dev/docs/apps/getting-started/build-app-example"
-              target="_blank"
-            >
-              example app
-            </s-link>
+            Drawer replacement is already active through the Theme App
+            Extension.
           </s-list-item>
           <s-list-item>
-            Explore Shopify&apos;s API with{" "}
-            <s-link
-              href="https://shopify.dev/docs/apps/tools/graphiql-admin-api"
-              target="_blank"
-            >
-              GraphiQL
-            </s-link>
+            Upsell configuration is now stored per app installation.
+          </s-list-item>
+          <s-list-item>
+            The next milestone will render these products in the
+            storefront drawer.
           </s-list-item>
         </s-unordered-list>
       </s-section>

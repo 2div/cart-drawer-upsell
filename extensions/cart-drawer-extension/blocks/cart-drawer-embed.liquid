@@ -1,3 +1,5 @@
+{% assign cdu_upsell_config = app.metafields.cart_drawer_upsell.settings.value | default: '{"enabled":false,"products":[]}' | replace: '</script', '<\/script' %}
+
 <div
   class="cdu-cart-drawer"
   data-cdu-cart-drawer
@@ -22,6 +24,13 @@
   >
     {{ block.settings.launcher_label }}
   </button>
+
+  <script
+    type="application/json"
+    data-cdu-upsell-config
+  >
+    {{ cdu_upsell_config }}
+  </script>
 
   <div
     class="cdu-cart-drawer__overlay"
