@@ -376,7 +376,6 @@ function installDawnCartDrawerAdapter() {
       "shipping-track",
     );
     const shippingBar = getElement("shipping-bar");
-
     const listenerController = new AbortController();
     const abortSignal = listenerController.signal;
     const listen = (
@@ -450,6 +449,12 @@ function installDawnCartDrawerAdapter() {
     let isUpdating = false;
     let lastExternalOpenHandledAt = 0;
 
+    function focusElement(element) {
+      element.focus({
+        preventScroll: true,
+      });
+    }
+
     function announce(message) {
       if (!status) return;
 
@@ -474,7 +479,7 @@ function installDawnCartDrawerAdapter() {
       );
 
       root
-        .querySelectorAll("[data-cdu-cart-action]")
+        .querySelectorAll("[data-cdu-action]")
         .forEach((button) => {
           button.disabled = updating;
         });
@@ -580,7 +585,7 @@ function installDawnCartDrawerAdapter() {
               );
 
               const imageHtml = item.image
-                ? `<img class="cdu-cart-item__image" src="${escapeHtml(
+                ? `<img class="cdu-ci__img" src="${escapeHtml(
                     item.image,
                   )}" alt="${escapedTitle}" width="88" height="88" loading="lazy">`
                 : "";
@@ -588,17 +593,17 @@ function installDawnCartDrawerAdapter() {
               const variantHtml =
                 item.variant_title &&
                 item.variant_title !== "Default Title"
-                  ? `<p class="cdu-cart-item__variant">${escapeHtml(
+                  ? `<p class="cdu-ci__v">${escapeHtml(
                       item.variant_title,
                     )}</p>`
                   : "";
 
-              return `<article class="cdu-cart-item">${imageHtml}<div class="cdu-cart-item__details"><h3 class="cdu-cart-item__title">${escapedTitle}</h3>${variantHtml}<p class="cdu-cart-item__price">${formatMoney(
+              return `<article class="cdu-ci">${imageHtml}<div class="cdu-ci__d"><h3 class="cdu-ci__t">${escapedTitle}</h3>${variantHtml}<p class="cdu-ci__p">${formatMoney(
                 item.final_line_price,
                 cart.currency,
-              )}</p><div class="cdu-cart-item__bottom"><div class="cdu-quantity" role="group" aria-label="Quantity for ${escapedTitle}"><button type="button" class="cdu-quantity__button" data-cdu-cart-action="decrease" data-cdu-line-key="${escapedLineKey}" data-cdu-quantity="${lowerQuantity}" aria-label="Decrease quantity of ${escapedTitle}">&minus;</button><span class="cdu-quantity__value">${item.quantity}</span><button type="button" class="cdu-quantity__button" data-cdu-cart-action="increase" data-cdu-line-key="${escapedLineKey}" data-cdu-quantity="${
+              )}</p><div class="cdu-ci__b"><div class="cdu-q" role="group" aria-label="Quantity for ${escapedTitle}"><button type="button" class="cdu-q__b" data-cdu-action="decrease" data-key="${escapedLineKey}" data-qty="${lowerQuantity}" aria-label="Decrease quantity of ${escapedTitle}">&minus;</button><span class="cdu-q__v">${item.quantity}</span><button type="button" class="cdu-q__b" data-cdu-action="increase" data-key="${escapedLineKey}" data-qty="${
                 item.quantity + 1
-              }" aria-label="Increase quantity of ${escapedTitle}">+</button></div><button type="button" class="cdu-cart-item__remove" data-cdu-cart-action="remove" data-cdu-line-key="${escapedLineKey}" data-cdu-quantity="0">Remove</button></div></div></article>`;
+              }" aria-label="Increase quantity of ${escapedTitle}">+</button></div><button type="button" class="cdu-ci__r" data-cdu-action="remove" data-key="${escapedLineKey}" data-qty="0">Remove</button></div></div></article>`;
             })
             .join("")}</div>`;
 
@@ -622,6 +627,35 @@ function installDawnCartDrawerAdapter() {
       } catch {
         return CART_UPDATE_ERROR;
       }
+    }
+
+    async function postCart(path, payload) {
+      const response = await fetch(
+        `${getRouteRoot()}cart/${path}.js`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            ...payload,
+            sections: [
+              "cart-icon-bubble",
+            ],
+            sections_url:
+              window.location.pathname,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          await readErrorMessage(response),
+        );
+      }
+
+      return response.json();
     }
 
     async function refreshCart({
@@ -682,33 +716,10 @@ function installDawnCartDrawerAdapter() {
       setUpdating(true);
 
       try {
-        const response = await fetch(
-          `${getRouteRoot()}cart/change.js`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-              body: JSON.stringify({
-              id: lineKey,
-              quantity,
-              sections: [
-                "cart-icon-bubble",
-              ],
-              sections_url:
-                window.location.pathname,
-            }),
-          },
-        );
-
-        if (!response.ok) {
-          throw new Error(
-            await readErrorMessage(response),
-          );
-        }
-
-        const cart = await response.json();
+        const cart = await postCart("change", {
+          id: lineKey,
+          quantity,
+        });
 
         renderCart(cart);
         updateThemeCartUI(cart);
@@ -784,9 +795,7 @@ function installDawnCartDrawerAdapter() {
       );
 
       if (!wasOpen) {
-        closeButton.focus({
-          preventScroll: true,
-        });
+        focusElement(closeButton);
       }
 
       if (refresh) {
@@ -816,9 +825,7 @@ function installDawnCartDrawerAdapter() {
       );
 
       if (previouslyFocusedElement?.isConnected) {
-        previouslyFocusedElement.focus({
-          preventScroll: true,
-        });
+        focusElement(previouslyFocusedElement);
       }
     }
 
@@ -832,16 +839,6 @@ function installDawnCartDrawerAdapter() {
 
       const focusableElements =
         getFocusableElements(panel);
-
-      if (focusableElements.length === 0) {
-        event.preventDefault();
-        panel.focus({
-          preventScroll: true,
-        });
-
-        return;
-      }
-
       const firstFocusableElement =
         focusableElements[0];
       const lastFocusableElement =
@@ -849,46 +846,29 @@ function installDawnCartDrawerAdapter() {
           focusableElements.length - 1
         ];
 
-      if (
-        !panel.contains(document.activeElement)
-      ) {
+      if (!firstFocusableElement) {
         event.preventDefault();
-
-        const nextFocusableElement = event.shiftKey
-          ? lastFocusableElement
-          : firstFocusableElement;
-
-        nextFocusableElement.focus({
-          preventScroll: true,
-        });
+        focusElement(panel);
 
         return;
       }
 
       if (
-        event.shiftKey &&
-        document.activeElement ===
-          firstFocusableElement
+        !panel.contains(document.activeElement) ||
+        (event.shiftKey &&
+          document.activeElement ===
+            firstFocusableElement) ||
+        (!event.shiftKey &&
+          document.activeElement ===
+            lastFocusableElement)
       ) {
         event.preventDefault();
 
-        lastFocusableElement.focus({
-          preventScroll: true,
-        });
-
-        return;
-      }
-
-      if (
-        !event.shiftKey &&
-        document.activeElement ===
-          lastFocusableElement
-      ) {
-        event.preventDefault();
-
-        firstFocusableElement.focus({
-          preventScroll: true,
-        });
+        focusElement(
+          event.shiftKey
+            ? lastFocusableElement
+            : firstFocusableElement,
+        );
       }
     }
 
@@ -912,10 +892,7 @@ function installDawnCartDrawerAdapter() {
 
       if (delay > 0) {
         await new Promise((resolve) => {
-          window.setTimeout(
-            resolve,
-            delay,
-          );
+          window.setTimeout(resolve, delay);
         });
       }
 
@@ -977,7 +954,7 @@ function installDawnCartDrawerAdapter() {
 
         const button =
           event.target.closest(
-            "[data-cdu-cart-action]",
+            "[data-cdu-action]",
           );
 
         if (
@@ -988,14 +965,14 @@ function installDawnCartDrawerAdapter() {
         }
 
         const lineKey =
-          button.dataset.cduLineKey;
+          button.dataset.key;
 
         const quantity = Number(
-          button.dataset.cduQuantity,
+          button.dataset.qty,
         );
 
         const action =
-          button.dataset.cduCartAction;
+          button.dataset.cduAction;
 
         if (
           !lineKey ||

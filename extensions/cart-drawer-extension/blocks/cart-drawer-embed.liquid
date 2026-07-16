@@ -32,6 +32,11 @@
     {{ cdu_upsell_config }}
   </script>
 
+  <script
+    src="{{ 'cart-drawer-upsells.js' | asset_url }}"
+    defer
+  ></script>
+
   <div
     class="cdu-cart-drawer__overlay"
     data-cdu-overlay
@@ -96,6 +101,8 @@
         Loading cart...
       </p>
     </div>
+
+    <div data-cdu-upsells></div>
 
     <p
       class="cdu-visually-hidden"

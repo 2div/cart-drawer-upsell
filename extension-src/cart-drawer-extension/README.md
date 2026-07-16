@@ -1,10 +1,10 @@
 # Cart Drawer Storefront Source
 
-Edit `cart-drawer.js` in this directory.
+Edit the storefront source files in this directory.
 
 The Theme App Extension serves the generated file at:
 
-`../../extensions/cart-drawer-extension/assets/cart-drawer.js`
+`../../extensions/cart-drawer-extension/assets/`
 
 Generate it with:
 

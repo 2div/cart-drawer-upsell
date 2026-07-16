@@ -16,6 +16,7 @@ type UpsellProduct = {
   id: string;
   title: string;
   handle: string;
+  variantId?: string;
   image?: {
     altText?: string | null;
     originalSrc: string;
@@ -52,7 +53,9 @@ function parseUpsellConfig(value: unknown): UpsellConfig {
             return (
               typeof product?.id === "string" &&
               typeof product.title === "string" &&
-              typeof product.handle === "string"
+              typeof product.handle === "string" &&
+              (typeof product.variantId === "string" ||
+                typeof product.variantId === "undefined")
             );
           })
           .slice(0, 4)
@@ -243,6 +246,7 @@ export default function Index() {
         id: product.id,
         title: product.title,
         handle: product.handle,
+        variantId: product.variants?.[0]?.id,
         image: product.images?.[0]
           ? {
               altText: product.images[0].altText,
@@ -341,6 +345,12 @@ export default function Index() {
                       <s-text color="subdued">
                         {product.handle}
                       </s-text>
+                      {!product.variantId && (
+                        <s-text color="subdued">
+                          Select this product again before it can be
+                          added from the drawer.
+                        </s-text>
+                      )}
                     </s-stack>
                     <s-button
                       type="button"
