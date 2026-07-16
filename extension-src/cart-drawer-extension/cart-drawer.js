@@ -175,6 +175,16 @@
     const footer = getElement("footer");
     const subtotal = getElement("subtotal");
     const status = getElement("status");
+    const noteInput = getElement("note");
+    const noteSaveButton = getElement("note-save");
+    const noteMessage = getElement("note-message");
+    const discountInput = getElement("discount");
+    const discountSaveButton = getElement(
+      "discount-save",
+    );
+    const discountMessage = getElement(
+      "discount-message",
+    );
     const shippingProgress = getElement(
       "shipping-progress",
     );
@@ -430,6 +440,13 @@
         cart.currency,
       );
 
+      if (
+        noteInput &&
+        document.activeElement !== noteInput
+      ) {
+        noteInput.value = cart.note || "";
+      }
+
       footer.hidden = false;
     }
 
@@ -598,6 +615,116 @@
         });
 
         announceSuccessfulCartAdd();
+      } finally {
+        setUpdating(false);
+      }
+    }
+
+    async function updateCartMeta(
+      payload,
+      messageElement,
+      successMessage,
+    ) {
+      if (isUpdating) return;
+
+      setUpdating(true);
+
+      try {
+        const cart = await postCart("update", payload);
+
+        renderCart(cart);
+        updateThemeCartUI(cart);
+
+        if (messageElement) {
+          messageElement.textContent = successMessage;
+        }
+
+        announce(successMessage);
+
+        document.dispatchEvent(
+          new CustomEvent("cdu:cart:updated", {
+            detail: {
+              cart,
+              action: "cart-meta",
+            },
+          }),
+        );
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : CART_UPDATE_ERROR;
+
+        if (messageElement) {
+          messageElement.textContent = message;
+        }
+
+        announce(message);
+      } finally {
+        setUpdating(false);
+      }
+    }
+
+    function applyNote() {
+      if (!noteInput) return;
+
+      void updateCartMeta(
+        {
+          note: noteInput.value,
+        },
+        noteMessage,
+        "Order note saved.",
+      );
+    }
+
+    async function applyDiscount() {
+      if (!discountInput) return;
+
+      const code = discountInput.value.trim();
+
+      if (!code) {
+        if (discountMessage) {
+          discountMessage.textContent =
+            "Enter a discount code.";
+        }
+        return;
+      }
+
+      if (isUpdating) return;
+
+      setUpdating(true);
+
+      try {
+        const cart = await postCart("update", {
+          discount: code,
+        });
+        const discountApplied =
+          Number(cart.total_discount) > 0 ||
+          (cart.cart_level_discount_applications || [])
+            .length > 0;
+        const message = discountApplied
+          ? "Discount code applied."
+          : "Discount code was not applied.";
+
+        renderCart(cart);
+        updateThemeCartUI(cart);
+
+        if (discountMessage) {
+          discountMessage.textContent = message;
+        }
+
+        announce(message);
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : CART_UPDATE_ERROR;
+
+        if (discountMessage) {
+          discountMessage.textContent = message;
+        }
+
+        announce(message);
       } finally {
         setUpdating(false);
       }
@@ -865,6 +992,16 @@
       "click",
       closeDrawer,
     );
+
+    if (noteSaveButton) {
+      listen(noteSaveButton, "click", applyNote);
+    }
+
+    if (discountSaveButton) {
+      listen(discountSaveButton, "click", () => {
+        void applyDiscount();
+      });
+    }
 
     listen(
       document,

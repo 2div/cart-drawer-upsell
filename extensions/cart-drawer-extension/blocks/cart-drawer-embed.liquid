@@ -125,6 +125,45 @@
       data-cdu-footer
       hidden
     >
+      <details class="cdu-cart-drawer__extra">
+        <summary>Add note</summary>
+        <div class="cdu-cart-drawer__field">
+          <textarea
+            data-cdu-note
+            rows="3"
+            aria-label="Order note"
+          ></textarea>
+          <button
+            type="button"
+            data-cdu-note-save
+            data-cdu-action
+          >
+            Save note
+          </button>
+          <p data-cdu-note-message role="status"></p>
+        </div>
+      </details>
+
+      <details class="cdu-cart-drawer__extra">
+        <summary>Add discount code</summary>
+        <div class="cdu-cart-drawer__field">
+          <input
+            data-cdu-discount
+            type="text"
+            autocomplete="off"
+            aria-label="Discount code"
+          >
+          <button
+            type="button"
+            data-cdu-discount-save
+            data-cdu-action
+          >
+            Apply
+          </button>
+          <p data-cdu-discount-message role="status"></p>
+        </div>
+      </details>
+
       <div class="cdu-cart-drawer__subtotal">
         <span>Subtotal</span>
         <strong data-cdu-subtotal></strong>
