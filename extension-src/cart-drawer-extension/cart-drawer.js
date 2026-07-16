@@ -448,6 +448,7 @@ function installDawnCartDrawerAdapter() {
     let previouslyFocusedElement = null;
     let isUpdating = false;
     let lastExternalOpenHandledAt = 0;
+    let itemError = null;
 
     function focusElement(element) {
       element.focus({
@@ -558,7 +559,6 @@ function installDawnCartDrawerAdapter() {
 
     function renderCart(cart) {
       renderShippingProgress(cart);
-
       if (!cart || cart.item_count === 0) {
         content.innerHTML =
           '<div class="cdu-cart-drawer__empty"><p>Your cart is empty.</p></div>';
@@ -578,6 +578,12 @@ function installDawnCartDrawerAdapter() {
                 escapeHtml(productTitle);
               const escapedLineKey =
                 escapeHtml(item.key);
+              const lineMessage =
+                itemError?.lineKey === item.key
+                  ? itemError.message
+                  : "";
+              const escapedItemError =
+                escapeHtml(lineMessage);
 
               const lowerQuantity = Math.max(
                 item.quantity - 1,
@@ -603,7 +609,9 @@ function installDawnCartDrawerAdapter() {
                 cart.currency,
               )}</p><div class="cdu-ci__b"><div class="cdu-q" role="group" aria-label="Quantity for ${escapedTitle}"><button type="button" class="cdu-q__b" data-cdu-action="decrease" data-key="${escapedLineKey}" data-qty="${lowerQuantity}" aria-label="Decrease quantity of ${escapedTitle}">&minus;</button><span class="cdu-q__v">${item.quantity}</span><button type="button" class="cdu-q__b" data-cdu-action="increase" data-key="${escapedLineKey}" data-qty="${
                 item.quantity + 1
-              }" aria-label="Increase quantity of ${escapedTitle}">+</button></div><button type="button" class="cdu-ci__r" data-cdu-action="remove" data-key="${escapedLineKey}" data-qty="0" aria-label="Remove ${escapedTitle}" title="Remove"></button></div></div></article>`;
+              }" aria-label="Increase quantity of ${escapedTitle}">+</button></div><button type="button" class="cdu-ci__r" data-cdu-action="remove" data-key="${escapedLineKey}" data-qty="0" aria-label="Remove ${escapedTitle}" title="Remove"></button></div><p class="cdu-ci__m" data-cdu-line-message="${escapedLineKey}" role="status" aria-live="polite"${
+                lineMessage ? "" : " hidden"
+              }>${escapedItemError}</p></div></article>`;
             })
             .join("")}</div>`;
 
@@ -650,9 +658,11 @@ function installDawnCartDrawerAdapter() {
       );
 
       if (!response.ok) {
-        throw new Error(
+        const error = new Error(
           await readErrorMessage(response),
         );
+        error.status = response.status;
+        throw error;
       }
 
       return response.json();
@@ -716,6 +726,8 @@ function installDawnCartDrawerAdapter() {
       setUpdating(true);
 
       try {
+        itemError = null;
+
         const cart = await postCart("change", {
           id: lineKey,
           quantity,
@@ -746,15 +758,27 @@ function installDawnCartDrawerAdapter() {
           }),
         );
       } catch (error) {
-        console.error(
-          LOG_PREFIX,
-          error,
-        );
-
-        announce(
+        const message =
           error instanceof Error
             ? error.message
-            : CART_UPDATE_ERROR,
+            : CART_UPDATE_ERROR;
+        const isExpectedCartError =
+          error?.status >= 400 && error.status < 500;
+
+        if (!isExpectedCartError) {
+          console.error(
+            LOG_PREFIX,
+            error,
+          );
+        }
+
+        itemError = {
+          lineKey,
+          message,
+        };
+
+        announce(
+          message,
         );
 
         await refreshCart({

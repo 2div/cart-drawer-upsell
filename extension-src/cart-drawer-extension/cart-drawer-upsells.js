@@ -1,6 +1,6 @@
 (() => {
   const rootSelector = "[data-cdu-cart-drawer]";
-  const unavailableVariants = new Set();
+  const unavailableVariants = new Map();
 
   function getRouteRoot() {
     return window.Shopify?.routes?.root || "/";
@@ -81,6 +81,10 @@
     return /sold|stock|inventory|available/i.test(message);
   }
 
+  function getAvailabilityMessage(message) {
+    return message || "This item is currently unavailable.";
+  }
+
   function renderUpsells(root, cart) {
     const container = root.querySelector(
       "[data-cdu-upsells]",
@@ -121,6 +125,9 @@
             const isUnavailable =
               product.availableForSale === false ||
               unavailableVariants.has(variantId);
+            const unavailableMessage =
+              unavailableVariants.get(variantId) ||
+              "This item is currently unavailable.";
             const image = product.image?.originalSrc
               ? `<img class="cdu-u__img" src="${escapeHtml(
                   product.image.originalSrc,
@@ -131,7 +138,7 @@
 
             return `<article class="cdu-u__i${
               isUnavailable ? " is-unavailable" : ""
-            }">${image}<div class="cdu-u__d"><p class="cdu-u__t">${title}</p>${price ? `<p class="cdu-u__p">${escapeHtml(price)}</p>` : ""}${isUnavailable ? '<p class="cdu-u__m">Sold out</p>' : ""}</div><button type="button" class="cdu-u__b" data-cdu-upsell-add="${escapeHtml(
+            }">${image}<div class="cdu-u__d"><p class="cdu-u__t">${title}</p>${price ? `<p class="cdu-u__p">${escapeHtml(price)}</p>` : ""}${isUnavailable ? `<p class="cdu-u__m">${escapeHtml(unavailableMessage)}</p>` : ""}</div><button type="button" class="cdu-u__b" data-cdu-upsell-add="${escapeHtml(
               variantId,
             )}" ${isUnavailable ? "disabled" : ""}>${
               isUnavailable ? "Sold out" : "Add"
@@ -190,13 +197,32 @@
         const errorMessage = await readAddError(response);
 
         if (isAvailabilityError(errorMessage)) {
-          unavailableVariants.add(button.dataset.cduUpsellAdd);
+          const message =
+            getAvailabilityMessage(errorMessage);
+
+          unavailableVariants.set(
+            button.dataset.cduUpsellAdd,
+            message,
+          );
           button.disabled = true;
           button.classList.add("is-unavailable");
           button.textContent = "Sold out";
-          button
-            .closest(".cdu-u__i")
-            ?.classList.add("is-unavailable");
+          const item = button.closest(".cdu-u__i");
+          const messageElement =
+            item?.querySelector(".cdu-u__m");
+
+          item?.classList.add("is-unavailable");
+
+          if (messageElement) {
+            messageElement.textContent = message;
+          } else {
+            item
+              ?.querySelector(".cdu-u__d")
+              ?.insertAdjacentHTML(
+                "beforeend",
+                `<p class="cdu-u__m">${escapeHtml(message)}</p>`,
+              );
+          }
           return;
         }
 
