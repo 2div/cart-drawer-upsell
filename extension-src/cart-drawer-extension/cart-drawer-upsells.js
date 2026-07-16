@@ -131,7 +131,7 @@
               unavailableVariants.has(variantId);
             const unavailableMessage =
               unavailableVariants.get(variantId) ||
-              "This item is currently unavailable.";
+              "This item is sold out.";
             const image = product.image?.originalSrc
               ? `<img class="cdu-u__img" src="${escapeHtml(
                   product.image.originalSrc,

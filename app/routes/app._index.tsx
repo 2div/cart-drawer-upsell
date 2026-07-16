@@ -17,6 +17,7 @@ type UpsellProduct = {
   title: string;
   handle: string;
   variantId?: string;
+  availableForSale?: boolean;
   price?: {
     amount: string;
     currencyCode?: string;
@@ -48,6 +49,7 @@ type UpsellProductNode = {
   variants?: {
     nodes?: {
       id?: string | null;
+      availableForSale?: boolean | null;
       price?: string | null;
     }[];
   } | null;
@@ -76,6 +78,9 @@ function parseUpsellConfig(value: unknown): UpsellConfig {
               typeof product.handle === "string" &&
               (typeof product.variantId === "string" ||
                 typeof product.variantId === "undefined") &&
+              (typeof product.availableForSale === "boolean" ||
+                typeof product.availableForSale ===
+                  "undefined") &&
               (typeof product.price === "object" ||
                 typeof product.price === "undefined")
             );
@@ -111,6 +116,7 @@ async function enrichProductsWithVariants(
             variants(first: 1) {
               nodes {
                 id
+                availableForSale
                 price
               }
             }
@@ -140,6 +146,11 @@ async function enrichProductsWithVariants(
       node?.variants?.nodes?.[0]?.id ||
       undefined;
     const amount = node?.variants?.nodes?.[0]?.price;
+    const availableForSale =
+      typeof node?.variants?.nodes?.[0]?.availableForSale ===
+      "boolean"
+        ? node.variants.nodes[0].availableForSale
+        : product.availableForSale;
     const price =
       product.price ||
       (amount
@@ -168,6 +179,7 @@ async function enrichProductsWithVariants(
       title: node?.title || product.title,
       handle: node?.handle || product.handle,
       variantId,
+      availableForSale,
       price,
       image,
     };
@@ -360,6 +372,8 @@ export default function Index() {
         title: product.title,
         handle: product.handle,
         variantId: product.variants?.[0]?.id,
+        availableForSale:
+          product.variants?.[0]?.availableForSale,
         image: product.images?.[0]
           ? {
               altText: product.images[0].altText,
@@ -462,6 +476,12 @@ export default function Index() {
                         <s-text color="subdued">
                           Select this product again before it can be
                           added from the drawer.
+                        </s-text>
+                      )}
+                      {product.availableForSale === false && (
+                        <s-text color="subdued">
+                          First variant is sold out and will appear
+                          disabled in the drawer.
                         </s-text>
                       )}
                     </s-stack>
