@@ -4,7 +4,7 @@ Edit `cart-drawer.js` in this directory.
 
 The Theme App Extension serves the generated file at:
 
-`../assets/cart-drawer.js`
+`../../extensions/cart-drawer-extension/assets/cart-drawer.js`
 
 Generate it with:
 

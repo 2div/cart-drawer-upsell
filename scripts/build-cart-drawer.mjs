@@ -5,7 +5,7 @@ import { build } from "esbuild";
 const root = process.cwd();
 const entryPoint = resolve(
   root,
-  "extensions/cart-drawer-extension/src/cart-drawer.js",
+  "extension-src/cart-drawer-extension/cart-drawer.js",
 );
 const outfile = resolve(
   root,
