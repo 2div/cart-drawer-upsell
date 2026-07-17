@@ -102,29 +102,18 @@
       </div>
     </div>
 
-    <div
-      class="cdu-cart-drawer__content"
-      data-cdu-content
-    >
-      <p class="cdu-cart-drawer__loading">
-        Loading cart...
-      </p>
-    </div>
+    <div class="cdu-cart-drawer__body">
+      <div
+        class="cdu-cart-drawer__content"
+        data-cdu-content
+      >
+        <p class="cdu-cart-drawer__loading">
+          Loading cart...
+        </p>
+      </div>
 
-    <div data-cdu-upsells></div>
+      <div data-cdu-upsells></div>
 
-    <p
-      class="cdu-visually-hidden"
-      data-cdu-status
-      role="status"
-      aria-live="polite"
-    ></p>
-
-    <footer
-      class="cdu-cart-drawer__footer"
-      data-cdu-footer
-      hidden
-    >
       <details class="cdu-cart-drawer__extra">
         <summary>Add note</summary>
         <div class="cdu-cart-drawer__field">
@@ -163,7 +152,20 @@
           <p data-cdu-discount-message role="status"></p>
         </div>
       </details>
+    </div>
 
+    <p
+      class="cdu-visually-hidden"
+      data-cdu-status
+      role="status"
+      aria-live="polite"
+    ></p>
+
+    <footer
+      class="cdu-cart-drawer__footer"
+      data-cdu-footer
+      hidden
+    >
       <div class="cdu-cart-drawer__subtotal">
         <span>Subtotal</span>
         <strong data-cdu-subtotal></strong>

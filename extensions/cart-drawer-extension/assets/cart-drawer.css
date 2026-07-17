@@ -111,7 +111,7 @@
   outline-offset: 3px;
 }
 
-.cdu-cart-drawer__content {
+.cdu-cart-drawer__body {
   padding-top: 22px;
 }
 
@@ -315,7 +315,7 @@ html.cdu-cart-drawer-open {
   overflow: hidden;
 }
 
-.cdu-cart-drawer__content {
+.cdu-cart-drawer__body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -323,9 +323,17 @@ html.cdu-cart-drawer-open {
   scrollbar-gutter: stable;
 }
 
+.cdu-cart-drawer__content {
+  min-height: 0;
+}
+
 .cdu-cart-drawer__footer {
   position: static;
   flex: 0 0 auto;
+}
+
+.cdu-cart-drawer:not(.has-items) .cdu-cart-drawer__extra {
+  display: none;
 }
 
 .cdu-cart-drawer__extra {
