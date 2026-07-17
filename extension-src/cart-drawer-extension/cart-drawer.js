@@ -685,9 +685,20 @@
     function applyNote() {
       if (!noteInput) return;
 
+      const note = noteInput.value.trim();
+
+      if (!note) {
+        setFieldMessage(
+          noteMessage,
+          "Enter an order note.",
+          "warning",
+        );
+        return;
+      }
+
       void updateCartMeta(
         {
-          note: noteInput.value,
+          note,
         },
         noteMessage,
         "Order note saved.",
@@ -1019,6 +1030,12 @@
       listen(noteSaveButton, "click", applyNote);
     }
 
+    if (noteInput) {
+      listen(noteInput, "input", () => {
+        setFieldMessage(noteMessage, "");
+      });
+    }
+
     if (discountSaveButton) {
       listen(discountSaveButton, "click", () => {
         void applyDiscount();
@@ -1026,6 +1043,10 @@
     }
 
     if (discountInput) {
+      listen(discountInput, "input", () => {
+        setFieldMessage(discountMessage, "");
+      });
+
       listen(discountInput, "keydown", (event) => {
         if (event.key !== "Enter") return;
 
