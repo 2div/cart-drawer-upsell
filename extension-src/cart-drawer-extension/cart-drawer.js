@@ -393,7 +393,7 @@
       renderShippingProgress(cart);
       if (!cart || cart.item_count === 0) {
         content.innerHTML =
-          '<div class="cdu-cart-drawer__empty"><p>Your cart is empty.</p></div>';
+          `<div class="cdu-cart-drawer__empty"><p>Your cart is empty.</p><a class="cdu-cart-drawer__empty-link" href="${getRouteRoot()}collections/all">Continue shopping</a></div>`;
 
         footer.hidden = true;
 
