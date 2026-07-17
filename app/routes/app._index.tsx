@@ -103,6 +103,19 @@ function dedupeProducts(products: UpsellProduct[]) {
   return [...productsById.values()].slice(0, MAX_UPSELL_PRODUCTS);
 }
 
+function formatProductPrice(price: UpsellProduct["price"]) {
+  if (!price?.amount) return "";
+
+  try {
+    return new Intl.NumberFormat("en", {
+      style: "currency",
+      currency: price.currencyCode || "USD",
+    }).format(Number(price.amount));
+  } catch {
+    return price.amount;
+  }
+}
+
 async function enrichProductsWithVariants(
   admin: Awaited<
     ReturnType<typeof authenticate.admin>
@@ -531,24 +544,69 @@ export default function Index() {
                     alignItems="center"
                     justifyContent="space-between"
                   >
-                    <s-stack direction="block" gap="small">
-                      <s-text>{product.title}</s-text>
-                      <s-text color="subdued">
-                        {product.handle}
-                      </s-text>
-                      {!product.variantId && (
-                        <s-text color="subdued">
-                          Select this product again before it can be
-                          added from the drawer.
-                        </s-text>
+                    <s-stack
+                      direction="inline"
+                      gap="base"
+                      alignItems="center"
+                    >
+                      {product.image?.originalSrc && (
+                        <s-thumbnail
+                          src={product.image.originalSrc}
+                          alt={
+                            product.image.altText ||
+                            product.title
+                          }
+                          size="large"
+                        />
                       )}
-                      {product.availableForSale === false && (
+
+                      <s-stack direction="block" gap="small">
+                        <s-text>{product.title}</s-text>
                         <s-text color="subdued">
-                          First variant is sold out and will appear
-                          disabled in the drawer.
+                          {product.handle}
                         </s-text>
-                      )}
+
+                        {product.price && (
+                          <s-text color="subdued">
+                            {formatProductPrice(product.price)}
+                          </s-text>
+                        )}
+
+                        <s-stack direction="inline" gap="small">
+                          {product.variantId ? (
+                            <s-badge
+                              tone={
+                                product.availableForSale === false
+                                  ? "warning"
+                                  : "success"
+                              }
+                            >
+                              {product.availableForSale === false
+                                ? "Sold out"
+                                : "Ready"}
+                            </s-badge>
+                          ) : (
+                            <s-badge tone="warning">
+                              Needs reselect
+                            </s-badge>
+                          )}
+                        </s-stack>
+
+                        {!product.variantId && (
+                          <s-text color="subdued">
+                            Select this product again before it can
+                            be added from the drawer.
+                          </s-text>
+                        )}
+                        {product.availableForSale === false && (
+                          <s-text color="subdued">
+                            First variant is sold out and will appear
+                            disabled in the drawer.
+                          </s-text>
+                        )}
+                      </s-stack>
                     </s-stack>
+
                     <s-button
                       type="button"
                       variant="tertiary"
