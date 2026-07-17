@@ -205,6 +205,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const response = await admin.graphql(
     `#graphql
       query CartDrawerUpsellSettings {
+        shop {
+          myshopifyDomain
+        }
         currentAppInstallation {
           id
           metafield(
@@ -221,6 +224,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     responseJson.data?.currentAppInstallation;
 
   return {
+    shopDomain:
+      typeof responseJson.data?.shop?.myshopifyDomain === "string"
+        ? responseJson.data.shop.myshopifyDomain
+        : null,
     config: parseUpsellConfig(
       appInstallation?.metafield?.jsonValue,
     ),
@@ -336,7 +343,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Index() {
-  const { config } = useLoaderData<typeof loader>();
+  const { config, shopDomain } = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
   const shopify = useAppBridge();
   const [enabled, setEnabled] = useState(config.enabled);
@@ -356,6 +363,16 @@ export default function Index() {
   const selectedProductCount = products.length;
   const hasEnabledWithoutProducts =
     enabled && selectedProductCount === 0;
+  const storeHandle = shopDomain?.replace(
+    ".myshopify.com",
+    "",
+  );
+  const themeEditorUrl = storeHandle
+    ? `https://admin.shopify.com/store/${storeHandle}/themes/current/editor?context=apps`
+    : null;
+  const storefrontPreviewUrl = shopDomain
+    ? `https://${shopDomain}/collections/all`
+    : null;
 
   useEffect(() => {
     if (savedConfig) {
@@ -546,6 +563,56 @@ export default function Index() {
               ))}
             </s-stack>
           )}
+        </s-stack>
+      </s-section>
+
+      <s-section heading="Setup checklist">
+        <s-stack direction="block" gap="base">
+          <s-paragraph>
+            Use this after saving settings to confirm the Theme App
+            Extension is enabled and the storefront drawer is taking
+            over the theme cart.
+          </s-paragraph>
+
+          <s-unordered-list>
+            <s-list-item>
+              Enable the Cart Drawer app embed in the current theme.
+            </s-list-item>
+            <s-list-item>
+              Open the storefront preview and add a product to cart.
+            </s-list-item>
+            <s-list-item>
+              Confirm only this drawer opens, not the native theme
+              drawer.
+            </s-list-item>
+            <s-list-item>
+              Confirm upsells, quantity controls, note, discount, and
+              checkout are working.
+            </s-list-item>
+          </s-unordered-list>
+
+          <s-stack direction="inline" gap="base">
+            {themeEditorUrl && (
+              <s-button
+                href={themeEditorUrl}
+                target="_blank"
+                type="button"
+              >
+                Open theme editor
+              </s-button>
+            )}
+
+            {storefrontPreviewUrl && (
+              <s-button
+                href={storefrontPreviewUrl}
+                target="_blank"
+                type="button"
+                variant="secondary"
+              >
+                Open storefront
+              </s-button>
+            )}
+          </s-stack>
         </s-stack>
       </s-section>
 
