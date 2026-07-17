@@ -11,6 +11,7 @@ import { authenticate } from "../shopify.server";
 
 const UPSELL_CONFIG_NAMESPACE = "cart_drawer_upsell";
 const UPSELL_CONFIG_KEY = "settings";
+const MAX_UPSELL_PRODUCTS = 4;
 
 type UpsellProduct = {
   id: string;
@@ -85,9 +86,21 @@ function parseUpsellConfig(value: unknown): UpsellConfig {
                 typeof product.price === "undefined")
             );
           })
-          .slice(0, 4)
+          .slice(0, MAX_UPSELL_PRODUCTS)
       : [],
   };
+}
+
+function dedupeProducts(products: UpsellProduct[]) {
+  const productsById = new Map<string, UpsellProduct>();
+
+  for (const product of products) {
+    if (!productsById.has(product.id)) {
+      productsById.set(product.id, product);
+    }
+  }
+
+  return [...productsById.values()].slice(0, MAX_UPSELL_PRODUCTS);
 }
 
 async function enrichProductsWithVariants(
@@ -236,6 +249,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
   }
 
+  products = dedupeProducts(products);
+
+  if (enabled && products.length === 0) {
+    return {
+      ok: false,
+      errors: [
+        "Select at least one upsell product or turn upsells off.",
+      ],
+    };
+  }
+
   products = await enrichProductsWithVariants(admin, products);
 
   const appInstallationResponse = await admin.graphql(
@@ -329,6 +353,9 @@ export default function Index() {
     fetcher.data && "errors" in fetcher.data
       ? fetcher.data.errors
       : [];
+  const selectedProductCount = products.length;
+  const hasEnabledWithoutProducts =
+    enabled && selectedProductCount === 0;
 
   useEffect(() => {
     if (savedConfig) {
@@ -356,7 +383,7 @@ export default function Index() {
     const selection = await shopify.resourcePicker({
       type: "product",
       action: "select",
-      multiple: 4,
+      multiple: MAX_UPSELL_PRODUCTS,
       selectionIds: productSelectionIds,
       filter: {
         variants: false,
@@ -397,9 +424,10 @@ export default function Index() {
       <s-section heading="Upsell products">
         <s-stack direction="block" gap="base">
           <s-paragraph>
-            Choose products that can appear in the cart drawer. This
-            saves the configuration to app data so the theme app
-            extension can read it without editing the merchant theme.
+            Choose up to {MAX_UPSELL_PRODUCTS} products that can
+            appear in the cart drawer. This saves the configuration
+            to app data so the theme app extension can read it
+            without editing the merchant theme.
           </s-paragraph>
 
           <fetcher.Form method="post">
@@ -423,6 +451,20 @@ export default function Index() {
                 }}
               />
 
+              {hasEnabledWithoutProducts && (
+                <s-box
+                  padding="base"
+                  borderWidth="base"
+                  borderRadius="base"
+                  background="subdued"
+                >
+                  <s-text>
+                    Select at least one product before enabling
+                    upsells.
+                  </s-text>
+                </s-box>
+              )}
+
               <s-stack direction="inline" gap="base">
                 <s-button
                   type="button"
@@ -438,6 +480,11 @@ export default function Index() {
                   Save settings
                 </s-button>
               </s-stack>
+
+              <s-text color="subdued">
+                {selectedProductCount} of {MAX_UPSELL_PRODUCTS}{" "}
+                products selected.
+              </s-text>
             </s-stack>
           </fetcher.Form>
 
@@ -509,11 +556,14 @@ export default function Index() {
             Extension.
           </s-list-item>
           <s-list-item>
-            Upsell configuration is now stored per app installation.
+            Upsell products are stored per app installation.
           </s-list-item>
           <s-list-item>
-            The next milestone will render these products in the
-            storefront drawer.
+            The storefront drawer reads these products without theme
+            file edits.
+          </s-list-item>
+          <s-list-item>
+            Sold-out upsells appear disabled in the drawer.
           </s-list-item>
         </s-unordered-list>
       </s-section>
