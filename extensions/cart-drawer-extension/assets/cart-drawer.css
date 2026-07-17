@@ -412,6 +412,24 @@ html.cdu-cart-drawer-open {
   background: rgb(0 0 0 / 2%);
 }
 
+.cdu-cart-drawer__field p[data-cdu-tone="success"] {
+  border-color: rgb(21 128 61 / 18%);
+  background: rgb(21 128 61 / 7%);
+  color: #166534;
+}
+
+.cdu-cart-drawer__field p[data-cdu-tone="warning"] {
+  border-color: rgb(180 83 9 / 20%);
+  background: rgb(180 83 9 / 7%);
+  color: #92400e;
+}
+
+.cdu-cart-drawer__field p[data-cdu-tone="error"] {
+  border-color: rgb(185 28 28 / 22%);
+  background: rgb(185 28 28 / 7%);
+  color: #b91c1c;
+}
+
 .cdu-ci__b {
   display: flex;
   align-items: center;

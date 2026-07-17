@@ -305,6 +305,19 @@
         });
     }
 
+    function setFieldMessage(
+      element,
+      message,
+      tone = "info",
+    ) {
+      if (!element) return;
+
+      element.textContent = message;
+      element.dataset.cduTone = message
+        ? tone
+        : "";
+    }
+
     function renderShippingProgress(cart) {
   if (
     !shippingProgress ||
@@ -635,9 +648,11 @@
         renderCart(cart);
         updateThemeCartUI(cart);
 
-        if (messageElement) {
-          messageElement.textContent = successMessage;
-        }
+        setFieldMessage(
+          messageElement,
+          successMessage,
+          "success",
+        );
 
         announce(successMessage);
 
@@ -655,9 +670,11 @@
             ? error.message
             : CART_UPDATE_ERROR;
 
-        if (messageElement) {
-          messageElement.textContent = message;
-        }
+        setFieldMessage(
+          messageElement,
+          message,
+          "error",
+        );
 
         announce(message);
       } finally {
@@ -683,10 +700,11 @@
       const code = discountInput.value.trim();
 
       if (!code) {
-        if (discountMessage) {
-          discountMessage.textContent =
-            "Enter a discount code.";
-        }
+        setFieldMessage(
+          discountMessage,
+          "Enter a discount code.",
+          "warning",
+        );
         return;
       }
 
@@ -709,9 +727,11 @@
         renderCart(cart);
         updateThemeCartUI(cart);
 
-        if (discountMessage) {
-          discountMessage.textContent = message;
-        }
+        setFieldMessage(
+          discountMessage,
+          message,
+          discountApplied ? "success" : "warning",
+        );
 
         announce(message);
       } catch (error) {
@@ -720,9 +740,11 @@
             ? error.message
             : CART_UPDATE_ERROR;
 
-        if (discountMessage) {
-          discountMessage.textContent = message;
-        }
+        setFieldMessage(
+          discountMessage,
+          message,
+          "error",
+        );
 
         announce(message);
       } finally {
@@ -999,6 +1021,15 @@
 
     if (discountSaveButton) {
       listen(discountSaveButton, "click", () => {
+        void applyDiscount();
+      });
+    }
+
+    if (discountInput) {
+      listen(discountInput, "keydown", (event) => {
+        if (event.key !== "Enter") return;
+
+        event.preventDefault();
         void applyDiscount();
       });
     }
