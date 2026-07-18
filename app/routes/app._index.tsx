@@ -120,6 +120,22 @@ function formatProductPrice(price: UpsellProduct["price"]) {
   }
 }
 
+function getComparableConfig(config: UpsellConfig) {
+  return JSON.stringify({
+    enabled: config.enabled,
+    products: config.products.map((product) => ({
+      id: product.id,
+      title: product.title,
+      handle: product.handle,
+      status: product.status,
+      variantId: product.variantId,
+      availableForSale: product.availableForSale,
+      price: product.price,
+      image: product.image,
+    })),
+  });
+}
+
 async function enrichProductsWithVariants(
   admin: Awaited<
     ReturnType<typeof authenticate.admin>
@@ -383,6 +399,8 @@ export default function Index() {
   const [products, setProducts] = useState<UpsellProduct[]>(
     config.products,
   );
+  const [savedBaseline, setSavedBaseline] =
+    useState<UpsellConfig>(config);
 
   const isSaving = fetcher.state !== "idle";
   const savedConfig =
@@ -396,6 +414,11 @@ export default function Index() {
   const selectedProductCount = products.length;
   const hasEnabledWithoutProducts =
     enabled && selectedProductCount === 0;
+  const hasUnsavedChanges =
+    getComparableConfig({
+      enabled,
+      products,
+    }) !== getComparableConfig(savedBaseline);
   const storeHandle = shopDomain?.replace(
     ".myshopify.com",
     "",
@@ -411,6 +434,7 @@ export default function Index() {
     if (savedConfig) {
       setEnabled(savedConfig.enabled);
       setProducts(savedConfig.products);
+      setSavedBaseline(savedConfig);
       shopify.toast.show("Upsell settings saved");
     }
   }, [savedConfig, shopify]);
@@ -531,6 +555,19 @@ export default function Index() {
                 </s-box>
               )}
 
+              {hasUnsavedChanges && (
+                <s-box
+                  padding="base"
+                  borderWidth="base"
+                  borderRadius="base"
+                  background="subdued"
+                >
+                  <s-text>
+                    You have unsaved upsell settings.
+                  </s-text>
+                </s-box>
+              )}
+
               <s-stack direction="inline" gap="base">
                 <s-button
                   type="button"
@@ -541,6 +578,7 @@ export default function Index() {
                 <s-button
                   type="submit"
                   variant="primary"
+                  disabled={!hasUnsavedChanges || isSaving}
                   {...(isSaving ? { loading: true } : {})}
                 >
                   Save settings
