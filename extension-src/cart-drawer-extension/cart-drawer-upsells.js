@@ -159,6 +159,17 @@
     renderUpsells(root, await getCart());
   }
 
+  function dispatchCartUpdated(cart) {
+    document.dispatchEvent(
+      new CustomEvent("cdu:cart:updated", {
+        detail: {
+          cart,
+          action: "upsell-add",
+        },
+      }),
+    );
+  }
+
   function initializeUpsells(root) {
     if (root.dataset.cduUpsellsInitialized === "true") {
       return;
@@ -199,7 +210,13 @@
 
       if (response.ok) {
         button.textContent = "Added";
-        await refreshUpsells(root);
+        const cart = await getCart();
+
+        if (cart) {
+          dispatchCartUpdated(cart);
+        } else {
+          await refreshUpsells(root);
+        }
       } else {
         const errorMessage = await readAddError(response);
 

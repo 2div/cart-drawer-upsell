@@ -948,6 +948,19 @@
       }
     }
 
+    function handleCartUpdated(event) {
+      if (
+        event.detail?.action !== "upsell-add" ||
+        !event.detail.cart
+      ) {
+        return;
+      }
+
+      renderCart(event.detail.cart);
+      updateThemeCartUI(event.detail.cart);
+      announce("Item added to the cart.");
+    }
+
     listen(
       content,
       "click",
@@ -1006,6 +1019,12 @@
       document,
       "cdu:cart:add-success",
       handleSuccessfulCartAdd,
+    );
+
+    listen(
+      document,
+      "cdu:cart:updated",
+      handleCartUpdated,
     );
 
     listen(

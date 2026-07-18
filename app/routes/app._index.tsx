@@ -17,6 +17,7 @@ type UpsellProduct = {
   id: string;
   title: string;
   handle: string;
+  status?: string;
   variantId?: string;
   availableForSale?: boolean;
   price?: {
@@ -43,6 +44,7 @@ type UpsellProductNode = {
   id: string;
   title?: string | null;
   handle?: string | null;
+  status?: string | null;
   featuredImage?: {
     altText?: string | null;
     url?: string | null;
@@ -77,6 +79,8 @@ function parseUpsellConfig(value: unknown): UpsellConfig {
               typeof product?.id === "string" &&
               typeof product.title === "string" &&
               typeof product.handle === "string" &&
+              (typeof product.status === "string" ||
+                typeof product.status === "undefined") &&
               (typeof product.variantId === "string" ||
                 typeof product.variantId === "undefined") &&
               (typeof product.availableForSale === "boolean" ||
@@ -135,6 +139,7 @@ async function enrichProductsWithVariants(
             id
             title
             handle
+            status
             featuredImage {
               altText
               url
@@ -165,8 +170,13 @@ async function enrichProductsWithVariants(
     }
   }
 
-  return products.map((product) => {
+  return products.flatMap((product) => {
     const node = productsById.get(product.id);
+
+    if ((node?.status || product.status) !== "ACTIVE") {
+      return [];
+    }
+
     const variantId =
       product.variantId ||
       node?.variants?.nodes?.[0]?.id ||
@@ -204,6 +214,7 @@ async function enrichProductsWithVariants(
       id: product.id,
       title: node?.title || product.title,
       handle: node?.handle || product.handle,
+      status: node?.status || product.status,
       variantId,
       availableForSale,
       price,
@@ -281,6 +292,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   products = await enrichProductsWithVariants(admin, products);
+
+  if (enabled && products.length === 0) {
+    return {
+      ok: false,
+      errors: [
+        "Select at least one active upsell product or turn upsells off.",
+      ],
+    };
+  }
 
   const appInstallationResponse = await admin.graphql(
     `#graphql
@@ -417,17 +437,33 @@ export default function Index() {
       selectionIds: productSelectionIds,
       filter: {
         variants: false,
+        draft: false,
         archived: false,
+        hidden: false,
       },
     });
 
     if (!selection) return;
 
+    const activeProducts = selection.selection.filter(
+      (product) => product.status === "ACTIVE",
+    );
+
+    if (activeProducts.length < selection.selection.length) {
+      shopify.toast.show(
+        "Draft products cannot be used as upsells.",
+        {
+          isError: true,
+        },
+      );
+    }
+
     setProducts(
-      selection.selection.map((product) => ({
+      activeProducts.map((product) => ({
         id: product.id,
         title: product.title,
         handle: product.handle,
+        status: product.status,
         variantId: product.variants?.[0]?.id,
         availableForSale:
           product.variants?.[0]?.availableForSale,
