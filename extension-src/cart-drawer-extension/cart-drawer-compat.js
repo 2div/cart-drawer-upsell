@@ -3,6 +3,7 @@
   const originalOpenKey = "__cduOriginalOpen";
   const originalRenderContentsKey =
     "__cduOriginalRenderContents";
+  let dawnObserver = null;
 
   function isCartAddRequest(input, init = {}) {
     const requestUrl =
@@ -24,8 +25,17 @@
   }
 
   function announceSuccessfulCartAdd() {
-    document.dispatchEvent(
-      new Event("cdu:cart:add-success"),
+    requestAppDrawerOpen("cart-add");
+  }
+
+  function getAppDrawer() {
+    return document.querySelector(drawerSelector);
+  }
+
+  function shouldReplaceNativeDrawer() {
+    return (
+      getAppDrawer()?.dataset.cduReplaceNativeDrawer ===
+      "true"
     );
   }
 
@@ -114,6 +124,29 @@
   }
 
   function requestAppDrawerOpen(source) {
+    const appDrawerApi = window.CartDrawerUpsell;
+
+    if (
+      appDrawerApi &&
+      typeof appDrawerApi.open === "function"
+    ) {
+      void appDrawerApi.open();
+    } else {
+      window.setTimeout(() => {
+        if (
+          window.CartDrawerUpsell &&
+          typeof window.CartDrawerUpsell.open ===
+            "function"
+        ) {
+          void window.CartDrawerUpsell.open();
+        }
+      }, 50);
+    }
+
+    if (shouldReplaceNativeDrawer()) {
+      closeNativeCartDrawers();
+    }
+
     document.dispatchEvent(
       new CustomEvent("cdu:native-cart-open-request", {
         detail: {
@@ -123,19 +156,31 @@
     );
   }
 
+  function closeNativeCartDrawers() {
+    document
+      .querySelectorAll("cart-drawer")
+      .forEach((nativeDrawer) => {
+        if (
+          nativeDrawer.classList.contains("active") &&
+          typeof nativeDrawer.close === "function"
+        ) {
+          nativeDrawer.close();
+        }
+      });
+  }
+
   function patchDawnCartDrawers() {
-    const appDrawer =
-      document.querySelector(drawerSelector);
+    const appDrawer = getAppDrawer();
 
     if (!appDrawer) return;
 
-    const shouldReplaceNativeDrawer =
+    const replaceNativeDrawer =
       appDrawer.dataset.cduReplaceNativeDrawer === "true";
 
     document
       .querySelectorAll("cart-drawer")
       .forEach((nativeDrawer) => {
-        if (!shouldReplaceNativeDrawer) {
+        if (!replaceNativeDrawer) {
           restoreDawnCartDrawer(nativeDrawer);
           return;
         }
@@ -179,17 +224,26 @@
             "true";
         }
 
-        if (
-          nativeDrawer.classList.contains("active") &&
-          typeof nativeDrawer.close === "function"
-        ) {
-          nativeDrawer.close();
-        }
+        closeNativeCartDrawers();
       });
+  }
+
+  function observeDawnCartDrawerChanges() {
+    if (dawnObserver) return;
+
+    dawnObserver = new MutationObserver(() => {
+      patchDawnCartDrawers();
+    });
+
+    dawnObserver.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
   }
 
   function installDawnCartDrawerAdapter() {
     patchDawnCartDrawers();
+    observeDawnCartDrawerChanges();
 
     if (window.__cduWaitingForDawnCartDrawer) return;
 

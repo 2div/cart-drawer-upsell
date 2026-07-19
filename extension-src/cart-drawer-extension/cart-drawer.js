@@ -809,6 +809,16 @@
       }
     }
 
+    function registerPublicApi() {
+      window.CartDrawerUpsell = {
+        ...(window.CartDrawerUpsell || {}),
+        open: openFromExternalRequest,
+        close: closeDrawer,
+        refresh: refreshCart,
+        root,
+      };
+    }
+
     function closeDrawer() {
       if (!root.classList.contains("is-open")) {
         return;
@@ -1040,6 +1050,8 @@
         void openDrawer();
       },
     );
+
+    registerPublicApi();
 
     listen(
       closeButton,
