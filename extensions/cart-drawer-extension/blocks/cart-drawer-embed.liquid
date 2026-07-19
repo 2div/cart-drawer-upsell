@@ -8,6 +8,8 @@
   data-cdu-shipping-message="{{ block.settings.shipping_message | escape }}"
   data-cdu-shipping-success-message="{{ block.settings.shipping_success_message | escape }}"
   data-cdu-replace-native-drawer="{{ block.settings.replace_native_drawer }}"
+  data-cdu-upsell-heading="{{ block.settings.upsell_heading | escape }}"
+  data-cdu-upsell-limit="{{ block.settings.upsell_limit }}"
   style="
     --cdu-background: {{ block.settings.background_color }};
     --cdu-text: {{ block.settings.text_color }};
@@ -114,44 +116,48 @@
 
       <div data-cdu-upsells></div>
 
-      <details class="cdu-cart-drawer__extra">
-        <summary>Add note</summary>
-        <div class="cdu-cart-drawer__field">
-          <textarea
-            data-cdu-note
-            rows="3"
-            aria-label="Order note"
-          ></textarea>
-          <button
-            type="button"
-            data-cdu-note-save
-            data-cdu-action
-          >
-            Save note
-          </button>
-          <p data-cdu-note-message role="status"></p>
-        </div>
-      </details>
+      {% if block.settings.show_order_note %}
+        <details class="cdu-cart-drawer__extra">
+          <summary>Add note</summary>
+          <div class="cdu-cart-drawer__field">
+            <textarea
+              data-cdu-note
+              rows="3"
+              aria-label="Order note"
+            ></textarea>
+            <button
+              type="button"
+              data-cdu-note-save
+              data-cdu-action
+            >
+              Save note
+            </button>
+            <p data-cdu-note-message role="status"></p>
+          </div>
+        </details>
+      {% endif %}
 
-      <details class="cdu-cart-drawer__extra">
-        <summary>Add discount code</summary>
-        <div class="cdu-cart-drawer__field">
-          <input
-            data-cdu-discount
-            type="text"
-            autocomplete="off"
-            aria-label="Discount code"
-          >
-          <button
-            type="button"
-            data-cdu-discount-save
-            data-cdu-action
-          >
-            Apply
-          </button>
-          <p data-cdu-discount-message role="status"></p>
-        </div>
-      </details>
+      {% if block.settings.show_discount_code %}
+        <details class="cdu-cart-drawer__extra">
+          <summary>Add discount code</summary>
+          <div class="cdu-cart-drawer__field">
+            <input
+              data-cdu-discount
+              type="text"
+              autocomplete="off"
+              aria-label="Discount code"
+            >
+            <button
+              type="button"
+              data-cdu-discount-save
+              data-cdu-action
+            >
+              Apply
+            </button>
+            <p data-cdu-discount-message role="status"></p>
+          </div>
+        </details>
+      {% endif %}
     </div>
 
     <p
@@ -229,6 +235,33 @@
       "id": "shipping_success_message",
       "label": "Success message",
       "default": "You have unlocked free shipping!"
+    },
+    {
+      "type": "text",
+      "id": "upsell_heading",
+      "label": "Upsell heading",
+      "default": "You may also like"
+    },
+    {
+      "type": "range",
+      "id": "upsell_limit",
+      "label": "Upsells shown",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "show_order_note",
+      "label": "Show order note",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_discount_code",
+      "label": "Show discount code",
+      "default": true
     },
     {
       "type": "color",

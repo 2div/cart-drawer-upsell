@@ -52,6 +52,21 @@
     }
   }
 
+  function getUpsellHeading(root) {
+    return (
+      root.dataset.cduUpsellHeading?.trim() ||
+      "You may also like"
+    );
+  }
+
+  function getUpsellLimit(root) {
+    const limit = Number(root.dataset.cduUpsellLimit || 0);
+
+    return Number.isFinite(limit) && limit > 0
+      ? Math.min(Math.floor(limit), 4)
+      : 4;
+  }
+
   async function getCart() {
     const response = await fetch(
       `${getRouteRoot()}cart.js`,
@@ -112,19 +127,22 @@
       cartItems.map((item) => item.handle),
     );
     const products = Array.isArray(config.products)
-      ? config.products.filter((product) => {
-          return (
-            product?.variantId &&
-            !cartProductIds.has(
-              getIdNumber(product.id),
-            ) &&
-            !cartHandles.has(product.handle)
-          );
-        })
+      ? config.products
+          .filter((product) => {
+            return (
+              product?.variantId &&
+              !cartProductIds.has(
+                getIdNumber(product.id),
+              ) &&
+              !cartHandles.has(product.handle)
+            );
+          })
+          .slice(0, getUpsellLimit(root))
       : [];
+    const heading = escapeHtml(getUpsellHeading(root));
 
     container.innerHTML = products.length
-      ? `<section class="cdu-u"><h3 class="cdu-u__h">You may also like</h3>${products
+      ? `<section class="cdu-u"><h3 class="cdu-u__h">${heading}</h3>${products
           .map((product) => {
             const title = escapeHtml(product.title);
             const variantTitle =

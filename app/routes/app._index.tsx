@@ -840,7 +840,8 @@ export default function Index() {
             file edits.
           </s-list-item>
           <s-list-item>
-            Sold-out upsells appear disabled in the drawer.
+            Exact variants can be selected, and sold-out upsells
+            appear disabled in the drawer.
           </s-list-item>
         </s-unordered-list>
       </s-section>
