@@ -1,6 +1,8 @@
 (() => {
   const drawerSelector = "[data-cdu-cart-drawer]";
   const originalOpenKey = "__cduOriginalOpen";
+  const originalRenderContentsKey =
+    "__cduOriginalRenderContents";
 
   function isCartAddRequest(input, init = {}) {
     const requestUrl =
@@ -88,13 +90,37 @@
 
   function restoreDawnCartDrawer(nativeDrawer) {
     const originalOpen = nativeDrawer[originalOpenKey];
+    const originalRenderContents =
+      nativeDrawer[originalRenderContentsKey];
 
-    if (typeof originalOpen !== "function") return;
+    if (typeof originalOpen === "function") {
+      nativeDrawer.open = originalOpen;
 
-    nativeDrawer.open = originalOpen;
+      delete nativeDrawer[originalOpenKey];
+    }
 
-    delete nativeDrawer[originalOpenKey];
-    delete nativeDrawer.dataset.cduAdapterInstalled;
+    if (typeof originalRenderContents === "function") {
+      nativeDrawer.renderContents = originalRenderContents;
+
+      delete nativeDrawer[originalRenderContentsKey];
+    }
+
+    if (
+      typeof originalOpen === "function" ||
+      typeof originalRenderContents === "function"
+    ) {
+      delete nativeDrawer.dataset.cduAdapterInstalled;
+    }
+  }
+
+  function requestAppDrawerOpen(source) {
+    document.dispatchEvent(
+      new CustomEvent("cdu:native-cart-open-request", {
+        detail: {
+          source,
+        },
+      }),
+    );
   }
 
   function patchDawnCartDrawers() {
@@ -114,29 +140,44 @@
           return;
         }
 
+        let didPatch = false;
+
         if (
-          nativeDrawer.dataset.cduAdapterInstalled ===
-            "true" ||
-          typeof nativeDrawer.open !== "function"
+          typeof nativeDrawer.open === "function" &&
+          typeof nativeDrawer[originalOpenKey] !==
+            "function"
         ) {
-          return;
+          nativeDrawer[originalOpenKey] =
+            nativeDrawer.open;
+
+          nativeDrawer.open = function () {
+            requestAppDrawerOpen("dawn-open");
+          };
+
+          didPatch = true;
         }
 
-        nativeDrawer.dataset.cduAdapterInstalled = "true";
-        nativeDrawer[originalOpenKey] = nativeDrawer.open;
+        if (
+          typeof nativeDrawer.renderContents ===
+            "function" &&
+          typeof nativeDrawer[
+            originalRenderContentsKey
+          ] !== "function"
+        ) {
+          nativeDrawer[originalRenderContentsKey] =
+            nativeDrawer.renderContents;
 
-        nativeDrawer.open = function () {
-          document.dispatchEvent(
-            new CustomEvent(
-              "cdu:native-cart-open-request",
-              {
-                detail: {
-                  source: "dawn",
-                },
-              },
-            ),
-          );
-        };
+          nativeDrawer.renderContents = function () {
+            requestAppDrawerOpen("dawn-render-contents");
+          };
+
+          didPatch = true;
+        }
+
+        if (didPatch) {
+          nativeDrawer.dataset.cduAdapterInstalled =
+            "true";
+        }
 
         if (
           nativeDrawer.classList.contains("active") &&
