@@ -100,16 +100,22 @@ function parseUpsellConfig(value: unknown): UpsellConfig {
   };
 }
 
+function getUpsellProductKey(product: UpsellProduct) {
+  return product.variantId || product.id;
+}
+
 function dedupeProducts(products: UpsellProduct[]) {
-  const productsById = new Map<string, UpsellProduct>();
+  const productsByKey = new Map<string, UpsellProduct>();
 
   for (const product of products) {
-    if (!productsById.has(product.id)) {
-      productsById.set(product.id, product);
+    const key = getUpsellProductKey(product);
+
+    if (!productsByKey.has(key)) {
+      productsByKey.set(key, product);
     }
   }
 
-  return [...productsById.values()].slice(0, MAX_UPSELL_PRODUCTS);
+  return [...productsByKey.values()].slice(0, MAX_UPSELL_PRODUCTS);
 }
 
 function formatProductPrice(price: UpsellProduct["price"]) {
@@ -149,6 +155,9 @@ async function enrichProductsWithVariants(
   products: UpsellProduct[],
 ) {
   if (products.length === 0) return products;
+  const productIds = [
+    ...new Set(products.map((product) => product.id)),
+  ];
 
   const response = await admin.graphql(
     `#graphql
@@ -179,7 +188,7 @@ async function enrichProductsWithVariants(
       }`,
     {
       variables: {
-        ids: products.map((product) => product.id),
+        ids: productIds,
       },
     },
   );
@@ -201,7 +210,13 @@ async function enrichProductsWithVariants(
     }
 
     const variants = node?.variants?.nodes ?? [];
+    const requestedVariant = product.variantId
+      ? variants.find(
+          (variant) => variant.id === product.variantId,
+        )
+      : null;
     const selectedVariant =
+      requestedVariant ||
       variants.find(
         (variant) => variant.availableForSale === true,
       ) ||
@@ -459,9 +474,36 @@ export default function Index() {
   }, [errors, shopify]);
 
   const productSelectionIds = useMemo(() => {
-    return products.map((product) => ({
-      id: product.id,
-    }));
+    const selectionByProductId = new Map<
+      string,
+      {
+        id: string;
+        variants?: { id: string }[];
+      }
+    >();
+
+    for (const product of products) {
+      const selection =
+        selectionByProductId.get(product.id) ||
+        {
+          id: product.id,
+          variants: [],
+        };
+
+      if (product.variantId) {
+        selection.variants?.push({
+          id: product.variantId,
+        });
+      }
+
+      selectionByProductId.set(product.id, selection);
+    }
+
+    return [...selectionByProductId.values()].map((selection) =>
+      selection.variants?.length
+        ? selection
+        : { id: selection.id },
+    );
   }, [products]);
 
   async function chooseProducts() {
@@ -471,7 +513,7 @@ export default function Index() {
       multiple: MAX_UPSELL_PRODUCTS,
       selectionIds: productSelectionIds,
       filter: {
-        variants: false,
+        variants: true,
         draft: false,
         archived: false,
         hidden: false,
@@ -493,30 +535,45 @@ export default function Index() {
       );
     }
 
-    setProducts(
-      activeProducts.map((product) => ({
+    const selectedUpsells = activeProducts.flatMap((product) => {
+      const selectedVariants =
+        Array.isArray(product.variants) &&
+        product.variants.length > 0
+          ? product.variants
+          : [undefined];
+
+      return selectedVariants.map((variant) => ({
         id: product.id,
         title: product.title,
         handle: product.handle,
         status: product.status,
-        variantId: product.variants?.[0]?.id,
-        variantTitle: product.variants?.[0]?.title,
-        availableForSale:
-          product.variants?.[0]?.availableForSale,
+        variantId: variant?.id,
+        variantTitle: variant?.title,
+        availableForSale: variant?.availableForSale,
         image: product.images?.[0]
           ? {
               altText: product.images[0].altText,
               originalSrc: product.images[0].originalSrc,
             }
           : null,
-      })),
+      }));
+    });
+
+    if (selectedUpsells.length > MAX_UPSELL_PRODUCTS) {
+      shopify.toast.show(
+        `Only the first ${MAX_UPSELL_PRODUCTS} upsells were selected.`,
+      );
+    }
+
+    setProducts(
+      dedupeProducts(selectedUpsells).slice(0, MAX_UPSELL_PRODUCTS),
     );
   }
 
-  function removeProduct(productId: string) {
+  function removeProduct(productKey: string) {
     setProducts((currentProducts) =>
       currentProducts.filter(
-        (product) => product.id !== productId,
+        (product) => getUpsellProductKey(product) !== productKey,
       ),
     );
   }
@@ -526,10 +583,10 @@ export default function Index() {
       <s-section heading="Upsell products">
         <s-stack direction="block" gap="base">
           <s-paragraph>
-            Choose up to {MAX_UPSELL_PRODUCTS} products that can
-            appear in the cart drawer. This saves the configuration
-            to app data so the theme app extension can read it
-            without editing the merchant theme.
+            Choose up to {MAX_UPSELL_PRODUCTS} product variants that
+            can appear in the cart drawer. This saves the
+            configuration to app data so the theme app extension can
+            read it without editing the merchant theme.
           </s-paragraph>
 
           <fetcher.Form method="post">
@@ -599,7 +656,7 @@ export default function Index() {
 
               <s-text color="subdued">
                 {selectedProductCount} of {MAX_UPSELL_PRODUCTS}{" "}
-                products selected.
+                upsells selected.
               </s-text>
             </s-stack>
           </fetcher.Form>
@@ -619,7 +676,7 @@ export default function Index() {
             <s-stack direction="block" gap="small">
               {products.map((product) => (
                 <s-box
-                  key={product.id}
+                  key={getUpsellProductKey(product)}
                   padding="base"
                   borderWidth="base"
                   borderRadius="base"
@@ -706,7 +763,7 @@ export default function Index() {
                       type="button"
                       variant="tertiary"
                       onClick={() => {
-                        removeProduct(product.id);
+                        removeProduct(getUpsellProductKey(product));
                       }}
                     >
                       Remove
