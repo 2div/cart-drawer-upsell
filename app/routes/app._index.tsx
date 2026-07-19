@@ -19,6 +19,7 @@ type UpsellProduct = {
   handle: string;
   status?: string;
   variantId?: string;
+  variantTitle?: string;
   availableForSale?: boolean;
   price?: {
     amount: string;
@@ -52,6 +53,7 @@ type UpsellProductNode = {
   variants?: {
     nodes?: {
       id?: string | null;
+      title?: string | null;
       availableForSale?: boolean | null;
       price?: string | null;
     }[];
@@ -83,6 +85,9 @@ function parseUpsellConfig(value: unknown): UpsellConfig {
                 typeof product.status === "undefined") &&
               (typeof product.variantId === "string" ||
                 typeof product.variantId === "undefined") &&
+              (typeof product.variantTitle === "string" ||
+                typeof product.variantTitle ===
+                  "undefined") &&
               (typeof product.availableForSale === "boolean" ||
                 typeof product.availableForSale ===
                   "undefined") &&
@@ -129,6 +134,7 @@ function getComparableConfig(config: UpsellConfig) {
       handle: product.handle,
       status: product.status,
       variantId: product.variantId,
+      variantTitle: product.variantTitle,
       availableForSale: product.availableForSale,
       price: product.price,
       image: product.image,
@@ -160,9 +166,10 @@ async function enrichProductsWithVariants(
               altText
               url
             }
-            variants(first: 1) {
+            variants(first: 50) {
               nodes {
                 id
+                title
                 availableForSale
                 price
               }
@@ -193,24 +200,27 @@ async function enrichProductsWithVariants(
       return [];
     }
 
+    const variants = node?.variants?.nodes ?? [];
+    const selectedVariant =
+      variants.find(
+        (variant) => variant.availableForSale === true,
+      ) ||
+      variants.find((variant) => Boolean(variant.id));
     const variantId =
-      product.variantId ||
-      node?.variants?.nodes?.[0]?.id ||
-      undefined;
-    const amount = node?.variants?.nodes?.[0]?.price;
+      selectedVariant?.id || product.variantId || undefined;
+    const variantTitle =
+      selectedVariant?.title || product.variantTitle || undefined;
+    const amount = selectedVariant?.price;
     const availableForSale =
-      typeof node?.variants?.nodes?.[0]?.availableForSale ===
-      "boolean"
-        ? node.variants.nodes[0].availableForSale
+      typeof selectedVariant?.availableForSale === "boolean"
+        ? selectedVariant.availableForSale
         : product.availableForSale;
-    const price =
-      product.price ||
-      (amount
-        ? {
-            amount,
-            currencyCode,
-          }
-        : null);
+    const price = amount
+      ? {
+          amount,
+          currencyCode,
+        }
+      : product.price || null;
     const hasImage =
       Boolean(product.image) ||
       Boolean(node?.featuredImage?.url);
@@ -232,6 +242,7 @@ async function enrichProductsWithVariants(
       handle: node?.handle || product.handle,
       status: node?.status || product.status,
       variantId,
+      variantTitle,
       availableForSale,
       price,
       image,
@@ -489,6 +500,7 @@ export default function Index() {
         handle: product.handle,
         status: product.status,
         variantId: product.variants?.[0]?.id,
+        variantTitle: product.variants?.[0]?.title,
         availableForSale:
           product.variants?.[0]?.availableForSale,
         image: product.images?.[0]
@@ -646,6 +658,14 @@ export default function Index() {
                           </s-text>
                         )}
 
+                        {product.variantTitle &&
+                          product.variantTitle !==
+                            "Default Title" && (
+                            <s-text color="subdued">
+                              Variant: {product.variantTitle}
+                            </s-text>
+                          )}
+
                         <s-stack direction="inline" gap="small">
                           {product.variantId ? (
                             <s-badge
@@ -674,8 +694,9 @@ export default function Index() {
                         )}
                         {product.availableForSale === false && (
                           <s-text color="subdued">
-                            First variant is sold out and will appear
-                            disabled in the drawer.
+                            No variants are currently available, so
+                            this upsell will appear disabled in the
+                            drawer.
                           </s-text>
                         )}
                       </s-stack>

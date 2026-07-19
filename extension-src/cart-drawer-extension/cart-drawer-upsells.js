@@ -127,6 +127,11 @@
       ? `<section class="cdu-u"><h3 class="cdu-u__h">You may also like</h3>${products
           .map((product) => {
             const title = escapeHtml(product.title);
+            const variantTitle =
+              product.variantTitle &&
+              product.variantTitle !== "Default Title"
+                ? escapeHtml(product.variantTitle)
+                : "";
             const price = formatPrice(product.price);
             const variantId = getIdNumber(product.variantId);
             const isUnavailable =
@@ -145,7 +150,7 @@
 
             return `<article class="cdu-u__i${
               isUnavailable ? " is-unavailable" : ""
-            }">${image}<div class="cdu-u__d"><p class="cdu-u__t">${title}</p>${price ? `<p class="cdu-u__p">${escapeHtml(price)}</p>` : ""}${isUnavailable ? `<p class="cdu-u__m">${escapeHtml(unavailableMessage)}</p>` : ""}</div><button type="button" class="cdu-u__b" data-cdu-upsell-add="${escapeHtml(
+            }">${image}<div class="cdu-u__d"><p class="cdu-u__t">${title}</p>${variantTitle ? `<p class="cdu-u__v">${variantTitle}</p>` : ""}${price ? `<p class="cdu-u__p">${escapeHtml(price)}</p>` : ""}${isUnavailable ? `<p class="cdu-u__m">${escapeHtml(unavailableMessage)}</p>` : ""}</div><button type="button" class="cdu-u__b" data-cdu-upsell-add="${escapeHtml(
               variantId,
             )}" ${isUnavailable ? "disabled" : ""}>${
               isUnavailable ? "Sold out" : "Add"

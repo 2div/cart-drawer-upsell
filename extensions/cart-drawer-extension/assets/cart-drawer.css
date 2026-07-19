@@ -626,6 +626,13 @@ html.cdu-cart-drawer-open {
   opacity: 0.78;
 }
 
+.cdu-u__v {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.25;
+  opacity: 0.68;
+}
+
 .cdu-u__m {
   margin: 5px 0 0;
   color: #b91c1c;
