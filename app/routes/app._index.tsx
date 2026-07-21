@@ -12,6 +12,14 @@ import { authenticate } from "../shopify.server";
 const UPSELL_CONFIG_NAMESPACE = "cart_drawer_upsell";
 const UPSELL_CONFIG_KEY = "settings";
 const MAX_UPSELL_PRODUCTS = 4;
+const STOREFRONT_DIAGNOSTIC_SCRIPT = `(() => ({
+  appDrawerExists: !!document.querySelector("[data-cdu-cart-drawer]"),
+  initialized: document.querySelector("[data-cdu-cart-drawer]")?.dataset.cduInitialized,
+  replaceNative: document.querySelector("[data-cdu-cart-drawer]")?.dataset.cduReplaceNativeDrawer,
+  publicOpenApi: typeof window.CartDrawerUpsell?.open,
+  dawnPatched: document.querySelector("cart-drawer")?.dataset.cduAdapterInstalled,
+  renderPatched: typeof document.querySelector("cart-drawer")?.__cduOriginalRenderContents
+}))()`;
 
 type UpsellProduct = {
   id: string;
@@ -578,6 +586,14 @@ export default function Index() {
     );
   }
 
+  async function copyDiagnostics() {
+    await navigator.clipboard.writeText(
+      STOREFRONT_DIAGNOSTIC_SCRIPT,
+    );
+
+    shopify.toast.show("Diagnostic script copied");
+  }
+
   return (
     <s-page heading="Cart Drawer Upsell">
       <s-section heading="Upsell products">
@@ -811,6 +827,58 @@ export default function Index() {
                 Open theme editor
               </s-button>
             )}
+
+            {storefrontPreviewUrl && (
+              <s-button
+                href={storefrontPreviewUrl}
+                target="_blank"
+                type="button"
+                variant="secondary"
+              >
+                Open storefront
+              </s-button>
+            )}
+          </s-stack>
+        </s-stack>
+      </s-section>
+
+      <s-section heading="Storefront diagnostics">
+        <s-stack direction="block" gap="base">
+          <s-paragraph>
+            Use this when the theme cart opens instead of the app
+            drawer. Run the diagnostic in the storefront browser
+            console.
+          </s-paragraph>
+
+          <s-box
+            padding="base"
+            borderWidth="base"
+            borderRadius="base"
+            background="subdued"
+          >
+            <s-stack direction="block" gap="small">
+              <s-text>
+                Healthy result: app drawer exists, initialized is true,
+                replace native is true, and public open API is a
+                function.
+              </s-text>
+
+              <pre
+                style={{
+                  margin: 0,
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                }}
+              >
+                {STOREFRONT_DIAGNOSTIC_SCRIPT}
+              </pre>
+            </s-stack>
+          </s-box>
+
+          <s-stack direction="inline" gap="base">
+            <s-button type="button" onClick={copyDiagnostics}>
+              Copy diagnostic
+            </s-button>
 
             {storefrontPreviewUrl && (
               <s-button
