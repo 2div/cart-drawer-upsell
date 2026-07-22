@@ -104,6 +104,23 @@
     return message || "This item is currently unavailable.";
   }
 
+  function setUpsellMessage(button, message) {
+    const item = button.closest(".cdu-u__i");
+    const messageElement = item?.querySelector(".cdu-u__m");
+
+    if (messageElement) {
+      messageElement.textContent = message;
+      return;
+    }
+
+    item
+      ?.querySelector(".cdu-u__d")
+      ?.insertAdjacentHTML(
+        "beforeend",
+        `<p class="cdu-u__m">${escapeHtml(message)}</p>`,
+      );
+  }
+
   function renderUpsells(root, cart) {
     const container = root.querySelector(
       "[data-cdu-upsells]",
@@ -213,34 +230,35 @@
       button.setAttribute("aria-busy", "true");
       button.textContent = "Adding...";
 
-      const response = await fetch(
-        `${getRouteRoot()}cart/add.js`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
+      try {
+        const response = await fetch(
+          `${getRouteRoot()}cart/add.js`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({
+              id: button.dataset.cduUpsellAdd,
+              quantity: 1,
+            }),
           },
-          body: JSON.stringify({
-            id: button.dataset.cduUpsellAdd,
-            quantity: 1,
-          }),
-        },
-      );
+        );
 
-      button.classList.remove("is-loading");
-      button.removeAttribute("aria-busy");
+        if (response.ok) {
+          button.textContent = "Added";
+          const cart = await getCart();
 
-      if (response.ok) {
-        button.textContent = "Added";
-        const cart = await getCart();
+          if (cart) {
+            dispatchCartUpdated(cart);
+          } else {
+            await refreshUpsells(root);
+          }
 
-        if (cart) {
-          dispatchCartUpdated(cart);
-        } else {
-          await refreshUpsells(root);
+          return;
         }
-      } else {
+
         const errorMessage = await readAddError(response);
 
         if (isAvailabilityError(errorMessage)) {
@@ -254,30 +272,35 @@
           button.disabled = true;
           button.classList.add("is-unavailable");
           button.textContent = "Sold out";
-          const item = button.closest(".cdu-u__i");
-          const messageElement =
-            item?.querySelector(".cdu-u__m");
-
-          item?.classList.add("is-unavailable");
-
-          if (messageElement) {
-            messageElement.textContent = message;
-          } else {
-            item
-              ?.querySelector(".cdu-u__d")
-              ?.insertAdjacentHTML(
-                "beforeend",
-                `<p class="cdu-u__m">${escapeHtml(message)}</p>`,
-              );
-          }
+          button
+            .closest(".cdu-u__i")
+            ?.classList.add("is-unavailable");
+          setUpsellMessage(button, message);
           return;
         }
 
         button.disabled = false;
         button.textContent = "Try again";
+        setUpsellMessage(
+          button,
+          errorMessage || "This item could not be added.",
+        );
         window.setTimeout(() => {
           button.textContent = label;
         }, 1500);
+      } catch {
+        button.disabled = false;
+        button.textContent = "Try again";
+        setUpsellMessage(
+          button,
+          "This item could not be added. Please try again.",
+        );
+        window.setTimeout(() => {
+          button.textContent = label;
+        }, 1500);
+      } finally {
+        button.classList.remove("is-loading");
+        button.removeAttribute("aria-busy");
       }
     });
 

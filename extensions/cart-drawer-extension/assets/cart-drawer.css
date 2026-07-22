@@ -332,10 +332,6 @@ html.cdu-cart-drawer-open {
   flex: 0 0 auto;
 }
 
-.cdu-cart-drawer:not(.has-items) .cdu-cart-drawer__extra {
-  display: none;
-}
-
 .cdu-cart-drawer__extra {
   margin: 0;
   border-bottom: 1px solid rgb(0 0 0 / 10%);
