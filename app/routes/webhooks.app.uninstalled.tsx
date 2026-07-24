@@ -8,9 +8,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   console.log(`Received ${topic} webhook for ${shop}`);
 
   // Webhook requests can trigger multiple times and after an app has already been uninstalled.
-  // If this webhook already ran, the session may have been deleted previously.
-  if (session) {
-    await db.session.deleteMany({ where: { shop } });
+  // Delete by shop so cleanup still runs if Shopify cannot load a matching session.
+  await db.session.deleteMany({ where: { shop } });
+
+  if (!session) {
+    console.log(
+      `No active session found for ${shop}; cleanup is already complete.`,
+    );
   }
 
   return new Response();
