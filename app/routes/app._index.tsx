@@ -438,8 +438,11 @@ export default function Index() {
       ? fetcher.data.errors
       : [];
   const selectedProductCount = products.length;
+  const savedProductCount = savedBaseline.products.length;
   const hasEnabledWithoutProducts =
     enabled && selectedProductCount === 0;
+  const hasSavedUpsells =
+    savedBaseline.enabled && savedProductCount > 0;
   const hasUnsavedChanges =
     getComparableConfig({
       enabled,
@@ -580,6 +583,96 @@ export default function Index() {
 
   return (
     <s-page heading="Cart Drawer Upsell">
+      <s-section heading="Get started">
+        <s-stack direction="block" gap="base">
+          <s-paragraph>
+            Set up your cart drawer in a few minutes. Select the
+            products you want to recommend, enable the theme app
+            embed, then test the storefront cart.
+          </s-paragraph>
+
+          <s-box
+            padding="base"
+            borderWidth="base"
+            borderRadius="base"
+            background="subdued"
+          >
+            <s-stack direction="block" gap="small">
+              <s-stack direction="inline" gap="small">
+                <s-badge
+                  tone={hasSavedUpsells ? "success" : "warning"}
+                >
+                  {hasSavedUpsells
+                    ? "Upsells ready"
+                    : "Upsells need setup"}
+                </s-badge>
+                <s-badge
+                  tone={
+                    hasUnsavedChanges ? "warning" : "success"
+                  }
+                >
+                  {hasUnsavedChanges
+                    ? "Unsaved changes"
+                    : "Settings saved"}
+                </s-badge>
+              </s-stack>
+
+              <s-text color="subdued">
+                {savedProductCount} of {MAX_UPSELL_PRODUCTS} saved
+                upsells will appear in the storefront drawer.
+              </s-text>
+            </s-stack>
+          </s-box>
+
+          <s-unordered-list>
+            <s-list-item>
+              Choose up to {MAX_UPSELL_PRODUCTS} active product
+              variants for the drawer.
+            </s-list-item>
+            <s-list-item>
+              Save settings after changing products or enabling
+              upsells.
+            </s-list-item>
+            <s-list-item>
+              Open the theme editor and make sure the Cart Drawer app
+              embed is switched on.
+            </s-list-item>
+            <s-list-item>
+              Test on the storefront preview, not only inside the
+              theme editor iframe.
+            </s-list-item>
+          </s-unordered-list>
+
+          <s-stack direction="inline" gap="base">
+            <s-button type="button" onClick={chooseProducts}>
+              Select upsells
+            </s-button>
+
+            {themeEditorUrl && (
+              <s-button
+                href={themeEditorUrl}
+                target="_blank"
+                type="button"
+                variant="secondary"
+              >
+                Open theme editor
+              </s-button>
+            )}
+
+            {storefrontPreviewUrl && (
+              <s-button
+                href={storefrontPreviewUrl}
+                target="_blank"
+                type="button"
+                variant="secondary"
+              >
+                Test storefront
+              </s-button>
+            )}
+          </s-stack>
+        </s-stack>
+      </s-section>
+
       <s-section heading="Upsell products">
         <s-stack direction="block" gap="base">
           <s-paragraph>
@@ -776,28 +869,26 @@ export default function Index() {
         </s-stack>
       </s-section>
 
-      <s-section heading="Setup checklist">
+      <s-section heading="Launch checklist">
         <s-stack direction="block" gap="base">
           <s-paragraph>
-            Use this after saving settings to confirm the Theme App
-            Extension is enabled and the storefront drawer is taking
-            over the theme cart.
+            Use this after saving settings to confirm the drawer is
+            ready for shoppers.
           </s-paragraph>
 
           <s-unordered-list>
             <s-list-item>
-              Enable the Cart Drawer app embed in the current theme.
+              Theme app embed is enabled in the current theme.
             </s-list-item>
             <s-list-item>
-              Open the storefront preview and add a product to cart.
+              Storefront Add to Cart opens this drawer.
             </s-list-item>
             <s-list-item>
-              Confirm only this drawer opens, not the native theme
-              drawer.
+              The native theme drawer does not open at the same time.
             </s-list-item>
             <s-list-item>
-              Confirm upsells, quantity controls, note, discount, and
-              checkout are working.
+              Upsells, quantity controls, note, discount, and checkout
+              work on the storefront preview.
             </s-list-item>
           </s-unordered-list>
 
@@ -826,18 +917,21 @@ export default function Index() {
         </s-stack>
       </s-section>
 
-      <s-section slot="aside" heading="Status">
+      <s-section slot="aside" heading="Setup status">
         <s-unordered-list>
           <s-list-item>
-            Drawer replacement is already active through the Theme App
-            Extension.
+            {hasSavedUpsells
+              ? "Upsell products are saved and ready."
+              : "Select and save upsell products before launch."}
           </s-list-item>
           <s-list-item>
-            Upsell products are stored per app installation.
+            {savedBaseline.enabled
+              ? "Upsells are enabled for the drawer."
+              : "Upsells are currently turned off."}
           </s-list-item>
           <s-list-item>
-            The storefront drawer reads these products without theme
-            file edits.
+            The drawer reads settings from app data without theme file
+            edits.
           </s-list-item>
           <s-list-item>
             Exact variants can be selected, and sold-out upsells
