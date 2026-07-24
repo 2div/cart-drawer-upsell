@@ -4,6 +4,18 @@
   const originalRenderContentsKey =
     "__cduOriginalRenderContents";
   let dawnObserver = null;
+  const nativeCartDrawerSelectors = [
+    "cart-drawer",
+    "cart-notification",
+    "[data-cart-drawer]",
+    "[data-cart-notification]",
+    "#CartDrawer",
+    "#cart-drawer",
+    "#cart-notification",
+    ".cart-drawer",
+    ".cart-notification",
+    ".drawer--cart",
+  ].join(",");
 
   function isCartAddRequest(input, init = {}) {
     const requestUrl =
@@ -19,6 +31,27 @@
       const url = new URL(requestUrl, window.location.origin);
 
       return /\/cart\/add(?:\.js)?\/?$/.test(url.pathname);
+    } catch {
+      return false;
+    }
+  }
+
+  function isCartRouteUrl(value) {
+    try {
+      const url = new URL(value, window.location.href);
+      const routeRoot = new URL(
+        window.Shopify?.routes?.root || "/",
+        window.location.origin,
+      ).pathname.replace(/\/$/, "");
+      const cartPath = `${routeRoot}/cart`.replace(
+        /\/{2,}/g,
+        "/",
+      );
+
+      return (
+        url.origin === window.location.origin &&
+        url.pathname.replace(/\/$/, "") === cartPath
+      );
     } catch {
       return false;
     }
@@ -145,6 +178,8 @@
 
     if (shouldReplaceNativeDrawer()) {
       closeNativeCartDrawers();
+      window.setTimeout(closeNativeCartDrawers, 0);
+      window.setTimeout(closeNativeCartDrawers, 150);
     }
 
     document.dispatchEvent(
@@ -158,15 +193,95 @@
 
   function closeNativeCartDrawers() {
     document
-      .querySelectorAll("cart-drawer")
+      .querySelectorAll(nativeCartDrawerSelectors)
       .forEach((nativeDrawer) => {
+        if (nativeDrawer.matches(drawerSelector)) {
+          return;
+        }
+
         if (
           nativeDrawer.classList.contains("active") &&
           typeof nativeDrawer.close === "function"
         ) {
           nativeDrawer.close();
         }
+
+        nativeDrawer.classList.remove(
+          "active",
+          "animate",
+          "is-active",
+          "menu-opening",
+          "open",
+        );
+
+        if ("open" in nativeDrawer) {
+          nativeDrawer.open = false;
+        }
+
+        nativeDrawer.setAttribute("aria-hidden", "true");
       });
+  }
+
+  function shouldIgnoreCartLink(event, link) {
+    return (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey ||
+      link.target === "_blank" ||
+      link.hasAttribute("download") ||
+      link.closest("[data-cdu-ignore-cart-link]")
+    );
+  }
+
+  function installCartLinkInterceptor() {
+    if (window.__cduCartLinkInterceptorInstalled) return;
+
+    window.__cduCartLinkInterceptorInstalled = true;
+
+    document.addEventListener(
+      "click",
+      (event) => {
+        if (!shouldReplaceNativeDrawer()) return;
+
+        const link = event.target?.closest?.("a[href]");
+
+        if (
+          !link ||
+          shouldIgnoreCartLink(event, link) ||
+          !isCartRouteUrl(link.href)
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+        requestAppDrawerOpen("cart-link");
+      },
+      {
+        capture: true,
+      },
+    );
+  }
+
+  function installCartOpenEventInterceptor() {
+    if (window.__cduCartOpenEventInterceptorInstalled) return;
+
+    window.__cduCartOpenEventInterceptorInstalled = true;
+
+    [
+      "ajaxCart:open",
+      "cart:drawer:open",
+      "cart:open",
+      "theme:cart:open",
+    ].forEach((eventName) => {
+      document.addEventListener(eventName, () => {
+        if (shouldReplaceNativeDrawer()) {
+          requestAppDrawerOpen(eventName);
+        }
+      });
+    });
   }
 
   function patchDawnCartDrawers() {
@@ -266,6 +381,8 @@
 
   function initializeCompat() {
     installCartAddFallbacks();
+    installCartLinkInterceptor();
+    installCartOpenEventInterceptor();
     installDawnCartDrawerAdapter();
   }
 
