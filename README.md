@@ -60,6 +60,12 @@ Install dependencies:
 npm install
 ```
 
+Create a local environment file:
+
+```bash
+cp .env.example .env
+```
+
 Run type checks:
 
 ```bash
