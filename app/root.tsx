@@ -1,4 +1,14 @@
+import type { MetaFunction } from "react-router";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+
+export const meta: MetaFunction = () => [
+  { title: "Cart Drawer Upsell" },
+  {
+    name: "description",
+    content:
+      "Configure an independent Shopify cart drawer with storefront upsells.",
+  },
+];
 
 export default function App() {
   return (
