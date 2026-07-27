@@ -21,9 +21,10 @@ export default function App() {
   return (
     <div className={styles.index}>
       <div className={styles.content}>
-        <h1 className={styles.heading}>A short heading about [your app]</h1>
+        <h1 className={styles.heading}>Cart Drawer Upsell</h1>
         <p className={styles.text}>
-          A tagline about [your app] that describes your value proposition.
+          Manage your Shopify cart drawer, upsell products, and cart conversion
+          settings from one embedded app.
         </p>
         {showForm && (
           <Form className={styles.form} method="post" action="/auth/login">
@@ -39,16 +40,16 @@ export default function App() {
         )}
         <ul className={styles.list}>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>Independent drawer</strong>. Replace theme cart drawers
+            without editing merchant theme files.
           </li>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>Manual upsells</strong>. Choose product variants that appear
+            inside the storefront cart drawer.
           </li>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>Cart tools</strong>. Show free-shipping progress, order
+            notes, discount codes, and checkout actions.
           </li>
         </ul>
       </div>
