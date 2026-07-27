@@ -107,3 +107,4 @@ storefront preview, leave it unchecked.
 - [ ] Provide products that reviewers can add to cart.
 - [ ] Provide an upsell configuration already saved in the test store.
 - [ ] Mention that cart behavior should be tested on storefront preview, not only inside the theme editor iframe.
+- [ ] Fill in `docs/shopify-review-guide.md` with real review credentials and store details.
