@@ -143,6 +143,7 @@ Test on the live/dev storefront preview, not only inside the theme editor iframe
 - `docs/app-store-readiness.md`
 - `docs/billing-roadmap.md`
 - `docs/data-and-privacy.md`
+- `docs/deployment-checklist.md`
 - `docs/shopify-review-guide.md`
 
 ## Roadmap

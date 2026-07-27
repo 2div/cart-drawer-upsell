@@ -54,6 +54,7 @@ storefront preview, leave it unchecked.
 - [ ] `npm run check:cart-drawer` passes.
 - [ ] `npm run build` passes.
 - [ ] `shopify app build` passes.
+- [ ] Production deployment checklist is complete.
 - [ ] Generated `cart-drawer.js` stays below the configured Theme Check asset size limit.
 - [ ] Storefront JavaScript is minified from source files, not manually edited.
 - [ ] App embed does not block page rendering.
@@ -68,6 +69,7 @@ storefront preview, leave it unchecked.
 - [ ] Privacy policy URL is ready.
 - [ ] Terms of service URL is ready.
 - [ ] Support contact email or support URL is ready.
+- [ ] Production app URL and auth redirect URL are configured.
 
 ## Billing
 
