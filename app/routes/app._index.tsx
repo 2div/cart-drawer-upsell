@@ -917,6 +917,36 @@ export default function Index() {
         </s-stack>
       </s-section>
 
+      <s-section heading="Troubleshooting">
+        <s-stack direction="block" gap="base">
+          <s-paragraph>
+            Most setup issues are caused by the app embed being off,
+            unsaved upsell settings, or testing cart behavior inside
+            the theme editor iframe.
+          </s-paragraph>
+
+          <s-unordered-list>
+            <s-list-item>
+              If the app drawer does not open, enable the Cart Drawer
+              app embed and keep Replace the theme cart drawer on.
+            </s-list-item>
+            <s-list-item>
+              If upsells do not appear, save active product variants
+              and make sure those products are not already in the
+              cart.
+            </s-list-item>
+            <s-list-item>
+              If an upsell cannot be added, check whether the selected
+              variant is sold out or requires special product options.
+            </s-list-item>
+            <s-list-item>
+              Use the theme editor for settings and visual checks; use
+              the storefront preview for final cart behavior testing.
+            </s-list-item>
+          </s-unordered-list>
+        </s-stack>
+      </s-section>
+
       <s-section slot="aside" heading="Setup status">
         <s-unordered-list>
           <s-list-item>
