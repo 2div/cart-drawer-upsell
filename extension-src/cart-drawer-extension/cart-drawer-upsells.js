@@ -117,7 +117,7 @@
       ?.querySelector(".cdu-u__d")
       ?.insertAdjacentHTML(
         "beforeend",
-        `<p class="cdu-u__m">${escapeHtml(message)}</p>`,
+        `<p class="cdu-u__m" role="status" aria-live="polite">${escapeHtml(message)}</p>`,
       );
   }
 
@@ -182,12 +182,15 @@
                   product.image.altText || product.title,
                 )}" width="56" height="56" loading="lazy">`
               : '<span class="cdu-u__img cdu-u__img--empty" aria-hidden="true"></span>';
+            const buttonLabel = isUnavailable
+              ? `${product.title} is sold out`
+              : `Add ${product.title} to cart`;
 
             return `<article class="cdu-u__i${
               isUnavailable ? " is-unavailable" : ""
-            }">${image}<div class="cdu-u__d"><p class="cdu-u__t">${title}</p>${variantTitle ? `<p class="cdu-u__v">${variantTitle}</p>` : ""}${price ? `<p class="cdu-u__p">${escapeHtml(price)}</p>` : ""}${isUnavailable ? `<p class="cdu-u__m">${escapeHtml(unavailableMessage)}</p>` : ""}</div><button type="button" class="cdu-u__b" data-cdu-upsell-add="${escapeHtml(
+            }">${image}<div class="cdu-u__d"><p class="cdu-u__t">${title}</p>${variantTitle ? `<p class="cdu-u__v">${variantTitle}</p>` : ""}${price ? `<p class="cdu-u__p">${escapeHtml(price)}</p>` : ""}${isUnavailable ? `<p class="cdu-u__m" role="status" aria-live="polite">${escapeHtml(unavailableMessage)}</p>` : ""}</div><button type="button" class="cdu-u__b" data-cdu-upsell-add="${escapeHtml(
               variantId,
-            )}" ${isUnavailable ? "disabled" : ""}>${
+            )}" aria-label="${escapeHtml(buttonLabel)}" ${isUnavailable ? "disabled" : ""}>${
               isUnavailable ? "Sold out" : "Add"
             }</button></article>`;
           })
@@ -225,9 +228,11 @@
       if (!button || !root.contains(button)) return;
 
       const label = button.textContent;
+      const accessibleLabel = button.getAttribute("aria-label");
       button.disabled = true;
       button.classList.add("is-loading");
       button.setAttribute("aria-busy", "true");
+      button.setAttribute("aria-label", "Adding upsell to cart");
       button.textContent = "Adding...";
 
       try {
@@ -271,6 +276,7 @@
           );
           button.disabled = true;
           button.classList.add("is-unavailable");
+          button.setAttribute("aria-label", message);
           button.textContent = "Sold out";
           button
             .closest(".cdu-u__i")
@@ -280,6 +286,9 @@
         }
 
         button.disabled = false;
+        if (accessibleLabel) {
+          button.setAttribute("aria-label", accessibleLabel);
+        }
         button.textContent = "Try again";
         setUpsellMessage(
           button,
@@ -290,6 +299,9 @@
         }, 1500);
       } catch {
         button.disabled = false;
+        if (accessibleLabel) {
+          button.setAttribute("aria-label", accessibleLabel);
+        }
         button.textContent = "Try again";
         setUpsellMessage(
           button,

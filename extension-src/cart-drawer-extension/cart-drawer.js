@@ -799,6 +799,7 @@
         "aria-hidden",
         "false",
       );
+      panel.inert = false;
 
       if (!wasOpen) {
         focusElement(closeButton);
@@ -839,6 +840,7 @@
         "aria-hidden",
         "true",
       );
+      panel.inert = true;
 
       if (previouslyFocusedElement?.isConnected) {
         focusElement(previouslyFocusedElement);
