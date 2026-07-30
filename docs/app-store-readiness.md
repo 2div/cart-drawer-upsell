@@ -91,14 +91,17 @@ storefront preview, leave it unchecked.
 
 ## App Listing
 
-- [ ] App name is finalized.
+- [ ] App name is finalized and starts with a distinctive brand identifier.
 - [ ] App icon is created.
 - [ ] App tagline is finalized.
 - [ ] App description explains the value clearly.
 - [ ] Screenshots show drawer, upsells, admin setup, and theme editor settings.
+- [ ] Screenshots use actual app UI, not browser chrome, duplicate images, or logo-only images.
 - [ ] Demo video or GIF is prepared if needed.
+- [ ] Online Store sales channel requirement is indicated in the listing.
 - [ ] Pricing copy matches the real billing plan.
 - [ ] Support and policy links are live.
+- [ ] `docs/app-listing-draft.md` has been updated with final app listing copy.
 
 ## Shopify Review Notes
 

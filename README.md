@@ -141,6 +141,7 @@ Test on the live/dev storefront preview, not only inside the theme editor iframe
 ## Documentation
 
 - `docs/app-store-readiness.md`
+- `docs/app-listing-draft.md`
 - `docs/billing-roadmap.md`
 - `docs/data-and-privacy.md`
 - `docs/deployment-checklist.md`

@@ -1,4 +1,4 @@
-name = "React Router"
+name = "Cart Drawer Upsell"
 roles = ["frontend", "backend"]
 webhooks_path = "/webhooks/app/uninstalled"
 
