@@ -123,6 +123,7 @@ Test on the live/dev storefront preview, not only inside the theme editor iframe
 - Product Add to Cart opens only the app drawer.
 - Native theme drawer does not also open.
 - Header cart icon opens the app drawer.
+- Turning off Replace the theme cart drawer does not force the app drawer open.
 - Quantity increase/decrease works.
 - Remove works.
 - Subtotal updates.

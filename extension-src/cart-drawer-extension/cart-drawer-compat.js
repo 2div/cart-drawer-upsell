@@ -58,6 +58,8 @@
   }
 
   function announceSuccessfulCartAdd() {
+    if (!shouldReplaceNativeDrawer()) return;
+
     requestAppDrawerOpen("cart-add");
   }
 
@@ -157,6 +159,8 @@
   }
 
   function requestAppDrawerOpen(source) {
+    if (!shouldReplaceNativeDrawer()) return;
+
     const appDrawerApi = window.CartDrawerUpsell;
 
     if (
@@ -176,11 +180,9 @@
       }, 50);
     }
 
-    if (shouldReplaceNativeDrawer()) {
-      closeNativeCartDrawers();
-      window.setTimeout(closeNativeCartDrawers, 0);
-      window.setTimeout(closeNativeCartDrawers, 150);
-    }
+    closeNativeCartDrawers();
+    window.setTimeout(closeNativeCartDrawers, 0);
+    window.setTimeout(closeNativeCartDrawers, 150);
 
     document.dispatchEvent(
       new CustomEvent("cdu:native-cart-open-request", {
