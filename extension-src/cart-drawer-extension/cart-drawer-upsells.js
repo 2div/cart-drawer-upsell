@@ -169,6 +169,9 @@
                 : "";
             const price = formatPrice(product.price);
             const variantId = getIdNumber(product.variantId);
+            const productUrl = `${getRouteRoot()}products/${encodeURIComponent(
+              product.handle,
+            )}`;
             const isUnavailable =
               product.availableForSale === false ||
               unavailableVariants.has(variantId);
@@ -188,7 +191,7 @@
 
             return `<article class="cdu-u__i${
               isUnavailable ? " is-unavailable" : ""
-            }">${image}<div class="cdu-u__d"><p class="cdu-u__t">${title}</p>${variantTitle ? `<p class="cdu-u__v">${variantTitle}</p>` : ""}${price ? `<p class="cdu-u__p">${escapeHtml(price)}</p>` : ""}${isUnavailable ? `<p class="cdu-u__m" role="status" aria-live="polite">${escapeHtml(unavailableMessage)}</p>` : ""}</div><button type="button" class="cdu-u__b" data-cdu-upsell-add="${escapeHtml(
+            }"><a class="cdu-u__link" href="${escapeHtml(productUrl)}">${image}<div class="cdu-u__d"><p class="cdu-u__t">${title}</p>${variantTitle ? `<p class="cdu-u__v">${variantTitle}</p>` : ""}${price ? `<p class="cdu-u__p">${escapeHtml(price)}</p>` : ""}${isUnavailable ? `<p class="cdu-u__m" role="status" aria-live="polite">${escapeHtml(unavailableMessage)}</p>` : ""}</div></a><button type="button" class="cdu-u__b" data-cdu-upsell-add="${escapeHtml(
               variantId,
             )}" aria-label="${escapeHtml(buttonLabel)}" ${isUnavailable ? "disabled" : ""}>${
               isUnavailable ? "Sold out" : "Add"

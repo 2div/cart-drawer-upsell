@@ -572,7 +572,7 @@ html.cdu-cart-drawer-open {
 
 .cdu-u__i {
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
   min-height: 78px;
@@ -588,6 +588,21 @@ html.cdu-cart-drawer-open {
 .cdu-u__i:hover {
   border-color: rgb(0 0 0 / 16%);
   background: rgb(0 0 0 / 2.5%);
+}
+
+.cdu-u__link {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.cdu-u__link:hover .cdu-u__t {
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .cdu-u__img {
