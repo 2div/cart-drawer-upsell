@@ -245,6 +245,12 @@
     const shippingSuccessMessage =
       root.dataset.cduShippingSuccessMessage ||
       "You have unlocked free shipping!";
+    const emptyCartMessage =
+      root.dataset.cduEmptyMessage ||
+      "Your cart is empty.";
+    const continueShoppingLabel =
+      root.dataset.cduContinueShoppingLabel ||
+      "Continue shopping";
 
     if (
       !openButton ||
@@ -401,7 +407,7 @@
 
       if (!hasCartItems) {
         content.innerHTML =
-          `<div class="cdu-cart-drawer__empty"><p>Your cart is empty.</p><a class="cdu-cart-drawer__empty-link" href="${getRouteRoot()}collections/all">Continue shopping</a></div>`;
+          `<div class="cdu-cart-drawer__empty"><p>${escapeHtml(emptyCartMessage)}</p><a class="cdu-cart-drawer__empty-link" href="${getRouteRoot()}collections/all">${escapeHtml(continueShoppingLabel)}</a></div>`;
 
         footer.hidden = true;
 

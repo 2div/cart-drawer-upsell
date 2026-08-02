@@ -10,6 +10,8 @@
   data-cdu-replace-native-drawer="{{ block.settings.replace_native_drawer }}"
   data-cdu-upsell-heading="{{ block.settings.upsell_heading | escape }}"
   data-cdu-upsell-limit="{{ block.settings.upsell_limit }}"
+  data-cdu-empty-message="{{ block.settings.empty_message | escape }}"
+  data-cdu-continue-shopping-label="{{ block.settings.continue_shopping_label | escape }}"
   style="
     --cdu-background: {{ block.settings.background_color }};
     --cdu-text: {{ block.settings.text_color }};
@@ -174,7 +176,7 @@
       hidden
     >
       <div class="cdu-cart-drawer__subtotal">
-        <span>Subtotal</span>
+        <span>{{ block.settings.subtotal_label }}</span>
         <strong data-cdu-subtotal></strong>
       </div>
 
@@ -182,7 +184,7 @@
         class="cdu-cart-drawer__checkout"
         href="{{ routes.root_url }}checkout"
       >
-        Check out
+        {{ block.settings.checkout_label }}
       </a>
     </footer>
   </aside>
@@ -212,6 +214,30 @@
       "id": "launcher_label",
       "label": "Test button label",
       "default": "Open cart"
+    },
+    {
+      "type": "text",
+      "id": "empty_message",
+      "label": "Empty cart message",
+      "default": "Your cart is empty."
+    },
+    {
+      "type": "text",
+      "id": "continue_shopping_label",
+      "label": "Continue shopping label",
+      "default": "Continue shopping"
+    },
+    {
+      "type": "text",
+      "id": "subtotal_label",
+      "label": "Subtotal label",
+      "default": "Subtotal"
+    },
+    {
+      "type": "text",
+      "id": "checkout_label",
+      "label": "Checkout button label",
+      "default": "Check out"
     },
     {
       "type": "checkbox",
