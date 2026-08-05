@@ -10,6 +10,16 @@
   data-cdu-replace-native-drawer="{{ block.settings.replace_native_drawer }}"
   data-cdu-upsell-heading="{{ block.settings.upsell_heading | escape }}"
   data-cdu-upsell-limit="{{ block.settings.upsell_limit }}"
+  data-cdu-upsell-add-label="{{ block.settings.upsell_add_label | escape }}"
+  data-cdu-upsell-adding-label="{{ block.settings.upsell_adding_label | escape }}"
+  data-cdu-upsell-added-label="{{ block.settings.upsell_added_label | escape }}"
+  data-cdu-upsell-try-again-label="{{ block.settings.upsell_try_again_label | escape }}"
+  data-cdu-upsell-sold-out-label="{{ block.settings.upsell_sold_out_label | escape }}"
+  data-cdu-upsell-sold-out-message="{{ block.settings.upsell_sold_out_message | escape }}"
+  data-cdu-upsell-already-sold-out-message="{{ block.settings.upsell_already_sold_out_message | escape }}"
+  data-cdu-upsell-unavailable-message="{{ block.settings.upsell_unavailable_message | escape }}"
+  data-cdu-upsell-add-error-message="{{ block.settings.upsell_add_error_message | escape }}"
+  data-cdu-upsell-add-error-retry-message="{{ block.settings.upsell_add_error_retry_message | escape }}"
   data-cdu-empty-message="{{ block.settings.empty_message | escape }}"
   data-cdu-continue-shopping-label="{{ block.settings.continue_shopping_label | escape }}"
   data-cdu-note-empty-message="{{ block.settings.note_empty_message | escape }}"
@@ -282,6 +292,66 @@
       "max": 4,
       "step": 1,
       "default": 3
+    },
+    {
+      "type": "text",
+      "id": "upsell_add_label",
+      "label": "Upsell add button label",
+      "default": "Add"
+    },
+    {
+      "type": "text",
+      "id": "upsell_adding_label",
+      "label": "Upsell adding button label",
+      "default": "Adding..."
+    },
+    {
+      "type": "text",
+      "id": "upsell_added_label",
+      "label": "Upsell added button label",
+      "default": "Added"
+    },
+    {
+      "type": "text",
+      "id": "upsell_try_again_label",
+      "label": "Upsell retry button label",
+      "default": "Try again"
+    },
+    {
+      "type": "text",
+      "id": "upsell_sold_out_label",
+      "label": "Upsell sold-out button label",
+      "default": "Sold out"
+    },
+    {
+      "type": "text",
+      "id": "upsell_sold_out_message",
+      "label": "Upsell sold-out message",
+      "default": "This item is sold out."
+    },
+    {
+      "type": "text",
+      "id": "upsell_already_sold_out_message",
+      "label": "Upsell already sold-out message",
+      "default": "This item is already sold out."
+    },
+    {
+      "type": "text",
+      "id": "upsell_unavailable_message",
+      "label": "Upsell unavailable message",
+      "default": "This item is currently unavailable."
+    },
+    {
+      "type": "text",
+      "id": "upsell_add_error_message",
+      "label": "Upsell add error message",
+      "default": "This item could not be added."
+    },
+    {
+      "type": "text",
+      "id": "upsell_add_error_retry_message",
+      "label": "Upsell retry error message",
+      "default": "This item could not be added. Please try again."
     },
     {
       "type": "checkbox",

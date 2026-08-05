@@ -67,6 +67,38 @@
       : 4;
   }
 
+  function getUpsellText(root) {
+    return {
+      addLabel:
+        root.dataset.cduUpsellAddLabel || "Add",
+      addingLabel:
+        root.dataset.cduUpsellAddingLabel || "Adding...",
+      addedLabel:
+        root.dataset.cduUpsellAddedLabel || "Added",
+      tryAgainLabel:
+        root.dataset.cduUpsellTryAgainLabel ||
+        "Try again",
+      soldOutLabel:
+        root.dataset.cduUpsellSoldOutLabel ||
+        "Sold out",
+      soldOutMessage:
+        root.dataset.cduUpsellSoldOutMessage ||
+        "This item is sold out.",
+      alreadySoldOutMessage:
+        root.dataset.cduUpsellAlreadySoldOutMessage ||
+        "This item is already sold out.",
+      unavailableMessage:
+        root.dataset.cduUpsellUnavailableMessage ||
+        "This item is currently unavailable.",
+      addErrorMessage:
+        root.dataset.cduUpsellAddErrorMessage ||
+        "This item could not be added.",
+      addErrorRetryMessage:
+        root.dataset.cduUpsellAddErrorRetryMessage ||
+        "This item could not be added. Please try again.",
+    };
+  }
+
   async function getCart() {
     const response = await fetch(
       `${getRouteRoot()}cart.js`,
@@ -96,12 +128,16 @@
     return /sold|stock|inventory|available/i.test(message);
   }
 
-  function getAvailabilityMessage(message) {
+  function getAvailabilityMessage(message, text) {
     if (/already sold out/i.test(message)) {
-      return "This item is already sold out.";
+      return text.alreadySoldOutMessage;
     }
 
-    return message || "This item is currently unavailable.";
+    if (/sold out/i.test(message)) {
+      return text.soldOutMessage;
+    }
+
+    return message || text.unavailableMessage;
   }
 
   function setUpsellMessage(button, message) {
@@ -157,6 +193,7 @@
           .slice(0, getUpsellLimit(root))
       : [];
     const heading = escapeHtml(getUpsellHeading(root));
+    const text = getUpsellText(root);
 
     container.innerHTML = products.length
       ? `<section class="cdu-u"><h3 class="cdu-u__h">${heading}</h3>${products
@@ -177,7 +214,7 @@
               unavailableVariants.has(variantId);
             const unavailableMessage =
               unavailableVariants.get(variantId) ||
-              "This item is sold out.";
+              text.soldOutMessage;
             const image = product.image?.originalSrc
               ? `<img class="cdu-u__img" src="${escapeHtml(
                   product.image.originalSrc,
@@ -186,15 +223,17 @@
                 )}" width="56" height="56" loading="lazy">`
               : '<span class="cdu-u__img cdu-u__img--empty" aria-hidden="true"></span>';
             const buttonLabel = isUnavailable
-              ? `${product.title} is sold out`
-              : `Add ${product.title} to cart`;
+              ? `${product.title} ${text.soldOutLabel}`
+              : `${text.addLabel} ${product.title}`;
 
             return `<article class="cdu-u__i${
               isUnavailable ? " is-unavailable" : ""
             }"><a class="cdu-u__link" href="${escapeHtml(productUrl)}">${image}<div class="cdu-u__d"><p class="cdu-u__t">${title}</p>${variantTitle ? `<p class="cdu-u__v">${variantTitle}</p>` : ""}${price ? `<p class="cdu-u__p">${escapeHtml(price)}</p>` : ""}${isUnavailable ? `<p class="cdu-u__m" role="status" aria-live="polite">${escapeHtml(unavailableMessage)}</p>` : ""}</div></a><button type="button" class="cdu-u__b" data-cdu-upsell-add="${escapeHtml(
               variantId,
             )}" aria-label="${escapeHtml(buttonLabel)}" ${isUnavailable ? "disabled" : ""}>${
-              isUnavailable ? "Sold out" : "Add"
+              isUnavailable
+                ? escapeHtml(text.soldOutLabel)
+                : escapeHtml(text.addLabel)
             }</button></article>`;
           })
           .join("")}</section>`
@@ -232,11 +271,12 @@
 
       const label = button.textContent;
       const accessibleLabel = button.getAttribute("aria-label");
+      const text = getUpsellText(root);
       button.disabled = true;
       button.classList.add("is-loading");
       button.setAttribute("aria-busy", "true");
-      button.setAttribute("aria-label", "Adding upsell to cart");
-      button.textContent = "Adding...";
+      button.setAttribute("aria-label", text.addingLabel);
+      button.textContent = text.addingLabel;
 
       try {
         const response = await fetch(
@@ -255,7 +295,7 @@
         );
 
         if (response.ok) {
-          button.textContent = "Added";
+          button.textContent = text.addedLabel;
           const cart = await getCart();
 
           if (cart) {
@@ -271,7 +311,7 @@
 
         if (isAvailabilityError(errorMessage)) {
           const message =
-            getAvailabilityMessage(errorMessage);
+            getAvailabilityMessage(errorMessage, text);
 
           unavailableVariants.set(
             button.dataset.cduUpsellAdd,
@@ -280,7 +320,7 @@
           button.disabled = true;
           button.classList.add("is-unavailable");
           button.setAttribute("aria-label", message);
-          button.textContent = "Sold out";
+          button.textContent = text.soldOutLabel;
           button
             .closest(".cdu-u__i")
             ?.classList.add("is-unavailable");
@@ -292,10 +332,10 @@
         if (accessibleLabel) {
           button.setAttribute("aria-label", accessibleLabel);
         }
-        button.textContent = "Try again";
+        button.textContent = text.tryAgainLabel;
         setUpsellMessage(
           button,
-          errorMessage || "This item could not be added.",
+          errorMessage || text.addErrorMessage,
         );
         window.setTimeout(() => {
           button.textContent = label;
@@ -305,10 +345,10 @@
         if (accessibleLabel) {
           button.setAttribute("aria-label", accessibleLabel);
         }
-        button.textContent = "Try again";
+        button.textContent = text.tryAgainLabel;
         setUpsellMessage(
           button,
-          "This item could not be added. Please try again.",
+          text.addErrorRetryMessage,
         );
         window.setTimeout(() => {
           button.textContent = label;
