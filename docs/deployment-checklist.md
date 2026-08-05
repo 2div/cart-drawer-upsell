@@ -7,8 +7,27 @@ Use this before deploying Cart Drawer Upsell outside local development.
 - [ ] Choose a hosting provider for the embedded admin app.
 - [ ] Choose a production database. Do not use the local SQLite development
   database for multi-instance production hosting.
+- [ ] Update the Prisma datasource and migration strategy for the chosen
+  production database before serving real merchants.
 - [ ] Set production environment variables securely in the hosting provider.
 - [ ] Run the app in production mode.
+
+## Database
+
+The current Prisma schema uses local SQLite for development:
+
+```prisma
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.sqlite"
+}
+```
+
+That is fine for local testing, but it is not a production database plan for a
+paid Shopify app. Before App Store launch, choose the production database
+provider, update `prisma/schema.prisma`, create the required migrations, and
+verify session persistence across deploys, restarts, and multiple app
+instances.
 
 ## Required Environment Variables
 
@@ -17,6 +36,8 @@ Use this before deploying Cart Drawer Upsell outside local development.
 - `SHOPIFY_APP_URL`
 - `SCOPES`
 - `NODE_ENV=production`
+- Billing variables from `.env.example`, after pricing and trial terms are
+  finalized
 
 `SHOPIFY_APP_URL` must be the public HTTPS origin of the hosted app, for
 example `https://app.example.com`.
@@ -73,10 +94,13 @@ shopify app deploy
 6. Install or re-authenticate the app on a test store.
 7. Enable the Theme App Extension app embed.
 8. Run the storefront test checklist from `README.md`.
+9. Restart the deployed app and confirm the embedded admin app still recognizes
+   the installed shop session.
 
 ## Before App Store Submission
 
 - [ ] Production app URL is real and stable.
+- [ ] Production database and session persistence are tested.
 - [ ] Redirect URL uses the production app URL.
 - [ ] Privacy policy URL is live.
 - [ ] Terms of service URL is live.

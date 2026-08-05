@@ -23,6 +23,10 @@ Stored fields include:
 These records are required for embedded admin authentication and Admin API
 access.
 
+The development schema currently uses local SQLite. Production hosting must use
+a durable database with backups and access controls appropriate for Shopify
+session data.
+
 Session records are deleted when the app receives:
 
 - `app/uninstalled`
