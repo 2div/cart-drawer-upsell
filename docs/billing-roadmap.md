@@ -3,13 +3,15 @@
 Billing is not active yet. The app should keep working normally in
 development until pricing, trial length, and plan names are finalized.
 
-Current placeholder settings live in `app/billing.server.ts`:
+Current placeholder settings live in `app/billing.server.ts` and can be
+controlled with environment variables:
 
-- Billing enabled: `false`
-- Plan name: `Cart Drawer Upsell`
-- Monthly price: `0 USD`
-- Trial days: `10`
-- Test mode: `true`
+- `BILLING_ENABLED=false`
+- `BILLING_PLAN_NAME="Cart Drawer Upsell"`
+- `BILLING_MONTHLY_PRICE=0`
+- `BILLING_CURRENCY_CODE=USD`
+- `BILLING_TRIAL_DAYS=10`
+- `BILLING_TEST_MODE=true`
 
 Before enabling billing:
 
@@ -21,3 +23,5 @@ Before enabling billing:
 6. Verify install, trial, cancellation, uninstall, and reinstall behavior.
 
 Billing should not block access while `BILLING_ENABLED` is `false`.
+Do not set `BILLING_ENABLED=true` in production until the billing gate is
+implemented and tested end to end.
