@@ -433,10 +433,13 @@ export default function Index() {
     fetcher.data && "config" in fetcher.data
       ? fetcher.data.config
       : null;
-  const errors =
-    fetcher.data && "errors" in fetcher.data
-      ? fetcher.data.errors
-      : [];
+  const errors = useMemo(
+    () =>
+      fetcher.data && "errors" in fetcher.data
+        ? fetcher.data.errors
+        : [],
+    [fetcher.data],
+  );
   const selectedProductCount = products.length;
   const savedProductCount = savedBaseline.products.length;
   const hasEnabledWithoutProducts =
