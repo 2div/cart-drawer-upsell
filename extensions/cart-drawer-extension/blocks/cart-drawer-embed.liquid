@@ -29,6 +29,12 @@
   data-cdu-item-added-message="{{ block.settings.item_added_message | escape }}"
   data-cdu-item-removed-message="{{ block.settings.item_removed_message | escape }}"
   data-cdu-quantity-updated-message="{{ block.settings.quantity_updated_message | escape }}"
+  data-cdu-product-fallback-label="{{ block.settings.product_fallback_label | escape }}"
+  data-cdu-quantity-label="{{ block.settings.quantity_label | escape }}"
+  data-cdu-decrease-label="{{ block.settings.decrease_label | escape }}"
+  data-cdu-increase-label="{{ block.settings.increase_label | escape }}"
+  data-cdu-remove-label="{{ block.settings.remove_label | escape }}"
+  data-cdu-remove-title="{{ block.settings.remove_title | escape }}"
   data-cdu-note-empty-message="{{ block.settings.note_empty_message | escape }}"
   data-cdu-note-success-message="{{ block.settings.note_success_message | escape }}"
   data-cdu-discount-empty-message="{{ block.settings.discount_empty_message | escape }}"
@@ -100,7 +106,7 @@
         type="button"
         class="cdu-cart-drawer__close"
         data-cdu-close
-        aria-label="Close cart drawer"
+        aria-label="{{ block.settings.close_label }}"
       >
         &times;
       </button>
@@ -119,7 +125,7 @@
       <div
         class="cdu-shipping-progress__track"
         role="progressbar"
-        aria-label="Free shipping progress"
+        aria-label="{{ block.settings.shipping_progress_label }}"
         aria-valuemin="0"
         aria-valuemax="100"
         aria-valuenow="0"
@@ -254,6 +260,12 @@
     },
     {
       "type": "text",
+      "id": "close_label",
+      "label": "Close button accessibility label",
+      "default": "Close cart drawer"
+    },
+    {
+      "type": "text",
       "id": "subtotal_label",
       "label": "Subtotal label",
       "default": "Subtotal"
@@ -307,6 +319,42 @@
       "default": "Cart quantity updated."
     },
     {
+      "type": "text",
+      "id": "product_fallback_label",
+      "label": "Fallback product label",
+      "default": "Product"
+    },
+    {
+      "type": "text",
+      "id": "quantity_label",
+      "label": "Quantity accessibility label",
+      "default": "Quantity for [title]"
+    },
+    {
+      "type": "text",
+      "id": "decrease_label",
+      "label": "Decrease quantity accessibility label",
+      "default": "Decrease quantity of [title]"
+    },
+    {
+      "type": "text",
+      "id": "increase_label",
+      "label": "Increase quantity accessibility label",
+      "default": "Increase quantity of [title]"
+    },
+    {
+      "type": "text",
+      "id": "remove_label",
+      "label": "Remove item accessibility label",
+      "default": "Remove [title]"
+    },
+    {
+      "type": "text",
+      "id": "remove_title",
+      "label": "Remove item tooltip",
+      "default": "Remove"
+    },
+    {
       "type": "checkbox",
       "id": "show_shipping_progress",
       "label": "Show free shipping progress",
@@ -329,6 +377,12 @@
       "id": "shipping_success_message",
       "label": "Success message",
       "default": "You have unlocked free shipping!"
+    },
+    {
+      "type": "text",
+      "id": "shipping_progress_label",
+      "label": "Progress bar accessibility label",
+      "default": "Free shipping progress"
     },
     {
       "type": "text",

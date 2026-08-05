@@ -32,6 +32,13 @@
     return element.innerHTML;
   }
 
+  function replaceTitleToken(template, title) {
+    return String(template || "").replace(
+      /\[title\]/g,
+      title,
+    );
+  }
+
   function formatMoney(amount, currency) {
     try {
       return new Intl.NumberFormat(
@@ -276,6 +283,24 @@
     const quantityUpdatedMessage =
       root.dataset.cduQuantityUpdatedMessage ||
       "Cart quantity updated.";
+    const productFallbackLabel =
+      root.dataset.cduProductFallbackLabel ||
+      "Product";
+    const quantityLabel =
+      root.dataset.cduQuantityLabel ||
+      "Quantity for [title]";
+    const decreaseLabel =
+      root.dataset.cduDecreaseLabel ||
+      "Decrease quantity of [title]";
+    const increaseLabel =
+      root.dataset.cduIncreaseLabel ||
+      "Increase quantity of [title]";
+    const removeLabel =
+      root.dataset.cduRemoveLabel ||
+      "Remove [title]";
+    const removeTitle =
+      root.dataset.cduRemoveTitle ||
+      "Remove";
     const noteEmptyMessage =
       root.dataset.cduNoteEmptyMessage ||
       "Enter an order note.";
@@ -460,9 +485,35 @@
               const productTitle =
                 item.product_title ||
                 item.title ||
-                "Product";
+                productFallbackLabel;
               const escapedTitle =
                 escapeHtml(productTitle);
+              const escapedQuantityLabel = escapeHtml(
+                replaceTitleToken(
+                  quantityLabel,
+                  productTitle,
+                ),
+              );
+              const escapedDecreaseLabel = escapeHtml(
+                replaceTitleToken(
+                  decreaseLabel,
+                  productTitle,
+                ),
+              );
+              const escapedIncreaseLabel = escapeHtml(
+                replaceTitleToken(
+                  increaseLabel,
+                  productTitle,
+                ),
+              );
+              const escapedRemoveLabel = escapeHtml(
+                replaceTitleToken(
+                  removeLabel,
+                  productTitle,
+                ),
+              );
+              const escapedRemoveTitle =
+                escapeHtml(removeTitle);
               const escapedLineKey =
                 escapeHtml(item.key);
               const lineMessage =
@@ -494,9 +545,9 @@
               return `<article class="cdu-ci">${imageHtml}<div class="cdu-ci__d"><h3 class="cdu-ci__t">${escapedTitle}</h3>${variantHtml}<p class="cdu-ci__p">${formatMoney(
                 item.final_line_price,
                 cart.currency,
-              )}</p><div class="cdu-ci__b"><div class="cdu-q" role="group" aria-label="Quantity for ${escapedTitle}"><button type="button" class="cdu-q__b" data-cdu-action="decrease" data-key="${escapedLineKey}" data-qty="${lowerQuantity}" aria-label="Decrease quantity of ${escapedTitle}">&minus;</button><span class="cdu-q__v">${item.quantity}</span><button type="button" class="cdu-q__b" data-cdu-action="increase" data-key="${escapedLineKey}" data-qty="${
+              )}</p><div class="cdu-ci__b"><div class="cdu-q" role="group" aria-label="${escapedQuantityLabel}"><button type="button" class="cdu-q__b" data-cdu-action="decrease" data-key="${escapedLineKey}" data-qty="${lowerQuantity}" aria-label="${escapedDecreaseLabel}">&minus;</button><span class="cdu-q__v">${item.quantity}</span><button type="button" class="cdu-q__b" data-cdu-action="increase" data-key="${escapedLineKey}" data-qty="${
                 item.quantity + 1
-              }" aria-label="Increase quantity of ${escapedTitle}">+</button></div><button type="button" class="cdu-ci__r" data-cdu-action="remove" data-key="${escapedLineKey}" data-qty="0" aria-label="Remove ${escapedTitle}" title="Remove"></button></div><p class="cdu-ci__m" role="status" aria-live="polite"${
+              }" aria-label="${escapedIncreaseLabel}">+</button></div><button type="button" class="cdu-ci__r" data-cdu-action="remove" data-key="${escapedLineKey}" data-qty="0" aria-label="${escapedRemoveLabel}" title="${escapedRemoveTitle}"></button></div><p class="cdu-ci__m" role="status" aria-live="polite"${
                 lineMessage ? "" : " hidden"
               }>${escapedItemError}</p></div></article>`;
             })
