@@ -37,6 +37,9 @@
   style="
     --cdu-background: {{ block.settings.background_color }};
     --cdu-text: {{ block.settings.text_color }};
+    --cdu-button-background: {{ block.settings.button_background_color }};
+    --cdu-button-text: {{ block.settings.button_text_color }};
+    --cdu-progress-color: {{ block.settings.progress_color }};
   "
 >
   <button
@@ -490,6 +493,24 @@
       "type": "color",
       "id": "text_color",
       "label": "Text color",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Button background color",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "progress_color",
+      "label": "Progress bar color",
       "default": "#121212"
     }
   ]

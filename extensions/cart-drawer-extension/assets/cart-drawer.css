@@ -16,8 +16,8 @@
   padding: 12px 20px;
   border: 0;
   border-radius: 999px;
-  background: #121212;
-  color: #ffffff;
+  background: var(--cdu-button-background, #121212);
+  color: var(--cdu-button-text, #ffffff);
   font: inherit;
   cursor: pointer;
 }
@@ -210,8 +210,8 @@ html.cdu-cart-drawer-open {
   min-height: 52px;
   padding: 14px 20px;
   border-radius: 4px;
-  background: #121212;
-  color: #ffffff;
+  background: var(--cdu-button-background, #121212);
+  color: var(--cdu-button-text, #ffffff);
   font-weight: 600;
   line-height: 1;
   text-align: center;
@@ -270,10 +270,10 @@ html.cdu-cart-drawer-open {
   justify-content: center;
   min-height: 42px;
   padding: 11px 16px;
-  border: 1px solid var(--cdu-text);
+  border: 1px solid var(--cdu-button-background, #121212);
   border-radius: 4px;
-  background: var(--cdu-text);
-  color: var(--cdu-background);
+  background: var(--cdu-button-background, #121212);
+  color: var(--cdu-button-text, #ffffff);
   font-size: 14px;
   font-weight: 600;
   line-height: 1;
@@ -415,10 +415,10 @@ html.cdu-cart-drawer-open {
   min-width: 92px;
   min-height: 44px;
   padding: 10px 16px;
-  border: 1px solid var(--cdu-text);
+  border: 1px solid var(--cdu-button-background, #121212);
   border-radius: 4px;
-  background: var(--cdu-text);
-  color: var(--cdu-background);
+  background: var(--cdu-button-background, #121212);
+  color: var(--cdu-button-text, #ffffff);
   font: inherit;
   font-size: 14px;
   font-weight: 600;
@@ -662,8 +662,8 @@ html.cdu-cart-drawer-open {
   padding: 10px 12px;
   border: 1px solid currentColor;
   border-radius: 4px;
-  background: var(--cdu-text);
-  color: var(--cdu-background);
+  background: var(--cdu-button-background, #121212);
+  color: var(--cdu-button-text, #ffffff);
   font: inherit;
   font-size: 13px;
   font-weight: 600;
@@ -813,7 +813,7 @@ html.cdu-cart-drawer-open {
   width: 0;
   height: 100%;
   border-radius: inherit;
-  background: currentColor;
+  background: var(--cdu-progress-color, currentColor);
   transition: width 300ms ease;
 }
 
