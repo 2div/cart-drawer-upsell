@@ -323,6 +323,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   products = dedupeProducts(products);
+  const requestedProductCount = products.length;
 
   if (enabled && products.length === 0) {
     return {
@@ -334,6 +335,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   products = await enrichProductsWithVariants(admin, products);
+  const skippedProductCount =
+    requestedProductCount - products.length;
+  const warnings =
+    skippedProductCount > 0
+      ? [
+          `${skippedProductCount} inactive or unavailable upsell ${
+            skippedProductCount === 1 ? "product was" : "products were"
+          } skipped.`,
+        ]
+      : [];
 
   if (enabled && products.length === 0) {
     return {
@@ -414,6 +425,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return {
     ok: true,
     config,
+    warnings,
   };
 };
 
@@ -437,6 +449,13 @@ export default function Index() {
     () =>
       fetcher.data && "errors" in fetcher.data
         ? fetcher.data.errors
+        : [],
+    [fetcher.data],
+  );
+  const warnings = useMemo(
+    () =>
+      fetcher.data && "warnings" in fetcher.data
+        ? fetcher.data.warnings ?? []
         : [],
     [fetcher.data],
   );
@@ -468,8 +487,12 @@ export default function Index() {
       setProducts(savedConfig.products);
       setSavedBaseline(savedConfig);
       shopify.toast.show("Upsell settings saved");
+
+      if (warnings.length > 0) {
+        shopify.toast.show(warnings[0]);
+      }
     }
-  }, [savedConfig, shopify]);
+  }, [savedConfig, shopify, warnings]);
 
   useEffect(() => {
     if (errors?.length) {
@@ -534,7 +557,7 @@ export default function Index() {
 
     if (activeProducts.length < selection.selection.length) {
       shopify.toast.show(
-        "Draft products cannot be used as upsells.",
+        "Only active products can be used as upsells. Draft, archived, and hidden products were ignored.",
         {
           isError: true,
         },
