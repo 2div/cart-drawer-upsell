@@ -22,6 +22,13 @@
   data-cdu-upsell-add-error-retry-message="{{ block.settings.upsell_add_error_retry_message | escape }}"
   data-cdu-empty-message="{{ block.settings.empty_message | escape }}"
   data-cdu-continue-shopping-label="{{ block.settings.continue_shopping_label | escape }}"
+  data-cdu-loading-message="{{ block.settings.loading_message | escape }}"
+  data-cdu-cart-load-error-message="{{ block.settings.cart_load_error_message | escape }}"
+  data-cdu-cart-update-error-message="{{ block.settings.cart_update_error_message | escape }}"
+  data-cdu-cart-sold-out-message="{{ block.settings.cart_sold_out_message | escape }}"
+  data-cdu-item-added-message="{{ block.settings.item_added_message | escape }}"
+  data-cdu-item-removed-message="{{ block.settings.item_removed_message | escape }}"
+  data-cdu-quantity-updated-message="{{ block.settings.quantity_updated_message | escape }}"
   data-cdu-note-empty-message="{{ block.settings.note_empty_message | escape }}"
   data-cdu-note-success-message="{{ block.settings.note_success_message | escape }}"
   data-cdu-discount-empty-message="{{ block.settings.discount_empty_message | escape }}"
@@ -128,7 +135,7 @@
         data-cdu-content
       >
         <p class="cdu-cart-drawer__loading">
-          Loading cart...
+          {{ block.settings.loading_message }}
         </p>
       </div>
 
@@ -253,6 +260,48 @@
       "id": "checkout_label",
       "label": "Checkout button label",
       "default": "Check out"
+    },
+    {
+      "type": "text",
+      "id": "loading_message",
+      "label": "Loading cart message",
+      "default": "Loading cart..."
+    },
+    {
+      "type": "text",
+      "id": "cart_load_error_message",
+      "label": "Cart load error message",
+      "default": "We could not load your cart. Please try again."
+    },
+    {
+      "type": "text",
+      "id": "cart_update_error_message",
+      "label": "Cart update error message",
+      "default": "The cart could not be updated."
+    },
+    {
+      "type": "text",
+      "id": "cart_sold_out_message",
+      "label": "Cart sold-out message",
+      "default": "Sold out."
+    },
+    {
+      "type": "text",
+      "id": "item_added_message",
+      "label": "Item added message",
+      "default": "Item added to the cart."
+    },
+    {
+      "type": "text",
+      "id": "item_removed_message",
+      "label": "Item removed message",
+      "default": "Item removed from the cart."
+    },
+    {
+      "type": "text",
+      "id": "quantity_updated_message",
+      "label": "Quantity updated message",
+      "default": "Cart quantity updated."
     },
     {
       "type": "checkbox",

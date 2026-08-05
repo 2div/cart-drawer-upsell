@@ -14,10 +14,14 @@
     );
   }
 
-  function formatCartErrorMessage(message) {
+  function formatCartErrorMessage(
+    message,
+    cartUpdateErrorMessage,
+    cartSoldOutMessage,
+  ) {
     return /already sold out/i.test(message)
-      ? "Sold out."
-      : message || CART_UPDATE_ERROR;
+      ? cartSoldOutMessage
+      : message || cartUpdateErrorMessage;
   }
 
   function escapeHtml(value = "") {
@@ -251,6 +255,27 @@
     const continueShoppingLabel =
       root.dataset.cduContinueShoppingLabel ||
       "Continue shopping";
+    const loadingMessage =
+      root.dataset.cduLoadingMessage ||
+      "Loading cart...";
+    const cartLoadErrorMessage =
+      root.dataset.cduCartLoadErrorMessage ||
+      "We could not load your cart. Please try again.";
+    const cartUpdateErrorMessage =
+      root.dataset.cduCartUpdateErrorMessage ||
+      CART_UPDATE_ERROR;
+    const cartSoldOutMessage =
+      root.dataset.cduCartSoldOutMessage ||
+      "Sold out.";
+    const itemAddedMessage =
+      root.dataset.cduItemAddedMessage ||
+      "Item added to the cart.";
+    const itemRemovedMessage =
+      root.dataset.cduItemRemovedMessage ||
+      "Item removed from the cart.";
+    const quantityUpdatedMessage =
+      root.dataset.cduQuantityUpdatedMessage ||
+      "Cart quantity updated.";
     const noteEmptyMessage =
       root.dataset.cduNoteEmptyMessage ||
       "Enter an order note.";
@@ -499,10 +524,10 @@
         return (
           errorData.description ||
           errorData.message ||
-          CART_UPDATE_ERROR
+          cartUpdateErrorMessage
         );
       } catch {
-        return CART_UPDATE_ERROR;
+        return cartUpdateErrorMessage;
       }
     }
 
@@ -542,7 +567,7 @@
     } = {}) {
       if (showLoading) {
         content.innerHTML =
-          '<p class="cdu-cart-drawer__loading">Loading cart...</p>';
+          `<p class="cdu-cart-drawer__loading">${escapeHtml(loadingMessage)}</p>`;
 
         footer.hidden = true;
       }
@@ -577,7 +602,7 @@
         );
 
         content.innerHTML =
-          '<p class="cdu-cart-drawer__error">We could not load your cart. Please try again.</p>';
+          `<p class="cdu-cart-drawer__error">${escapeHtml(cartLoadErrorMessage)}</p>`;
 
         footer.hidden = true;
 
@@ -609,13 +634,9 @@
           action === "remove" ||
           quantity === 0
         ) {
-          announce(
-            "Item removed from the cart.",
-          );
+          announce(itemRemovedMessage);
         } else {
-          announce(
-            "Cart quantity updated.",
-          );
+          announce(quantityUpdatedMessage);
         }
 
         document.dispatchEvent(
@@ -631,7 +652,9 @@
           formatCartErrorMessage(
             error instanceof Error
               ? error.message
-              : CART_UPDATE_ERROR,
+              : cartUpdateErrorMessage,
+            cartUpdateErrorMessage,
+            cartSoldOutMessage,
           );
         const isExpectedCartError =
           error?.status >= 400 && error.status < 500;
@@ -697,7 +720,7 @@
         const message =
           error instanceof Error
             ? error.message
-            : CART_UPDATE_ERROR;
+            : cartUpdateErrorMessage;
 
         setFieldMessage(
           messageElement,
@@ -778,7 +801,7 @@
         const message =
           error instanceof Error
             ? error.message
-            : CART_UPDATE_ERROR;
+            : cartUpdateErrorMessage;
 
         setFieldMessage(
           discountMessage,
@@ -991,7 +1014,7 @@
 
       renderCart(event.detail.cart);
       updateThemeCartUI(event.detail.cart);
-      announce("Item added to the cart.");
+      announce(itemAddedMessage);
     }
 
     listen(
