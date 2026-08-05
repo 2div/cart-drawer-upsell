@@ -13,6 +13,11 @@ controlled with environment variables:
 - `BILLING_TRIAL_DAYS=10`
 - `BILLING_TEST_MODE=true`
 
+The embedded admin app displays these values in a Billing readiness section so
+development stores, testers, and reviewers can confirm whether billing is still
+disabled, whether charges are in test mode, and which plan values are currently
+configured.
+
 Before enabling billing:
 
 1. Decide the production plan name, monthly price, and free trial length.

@@ -7,6 +7,11 @@ import type {
 import { useFetcher, useLoaderData } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { boundary } from "@shopify/shopify-app-react-router/server";
+import {
+  BILLING_ENABLED,
+  BILLING_PLAN,
+  BILLING_TEST_MODE,
+} from "../billing.server";
 import { authenticate } from "../shopify.server";
 
 const UPSELL_CONFIG_NAMESPACE = "cart_drawer_upsell";
@@ -128,6 +133,20 @@ function formatProductPrice(price: UpsellProduct["price"]) {
     }).format(Number(price.amount));
   } catch {
     return price.amount;
+  }
+}
+
+function formatBillingPrice(
+  amount: number,
+  currencyCode: string,
+) {
+  try {
+    return new Intl.NumberFormat("en", {
+      style: "currency",
+      currency: currencyCode,
+    }).format(amount);
+  } catch {
+    return `${amount} ${currencyCode}`;
   }
 }
 
@@ -297,6 +316,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     config: parseUpsellConfig(
       appInstallation?.metafield?.jsonValue,
     ),
+    billing: {
+      enabled: BILLING_ENABLED,
+      planName: BILLING_PLAN.name,
+      monthlyPrice: BILLING_PLAN.monthlyPrice,
+      currencyCode: BILLING_PLAN.currencyCode,
+      trialDays: BILLING_PLAN.trialDays,
+      testMode: BILLING_TEST_MODE,
+    },
   };
 };
 
@@ -430,7 +457,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Index() {
-  const { config, shopDomain } = useLoaderData<typeof loader>();
+  const { billing, config, shopDomain } =
+    useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
   const shopify = useAppBridge();
   const [enabled, setEnabled] = useState(config.enabled);
@@ -940,6 +968,67 @@ export default function Index() {
               </s-button>
             )}
           </s-stack>
+        </s-stack>
+      </s-section>
+
+      <s-section heading="Billing readiness">
+        <s-stack direction="block" gap="base">
+          <s-paragraph>
+            Billing is configured from environment variables and is
+            not enforced until subscription terms are final.
+          </s-paragraph>
+
+          <s-box
+            padding="base"
+            borderWidth="base"
+            borderRadius="base"
+            background="subdued"
+          >
+            <s-stack direction="block" gap="small">
+              <s-stack direction="inline" gap="small">
+                <s-badge
+                  tone={billing.enabled ? "warning" : "success"}
+                >
+                  {billing.enabled
+                    ? "Billing enabled"
+                    : "Billing disabled"}
+                </s-badge>
+                <s-badge
+                  tone={billing.testMode ? "warning" : "success"}
+                >
+                  {billing.testMode ? "Test charges" : "Live charges"}
+                </s-badge>
+              </s-stack>
+
+              <s-text>
+                {billing.planName}:{" "}
+                {formatBillingPrice(
+                  billing.monthlyPrice,
+                  billing.currencyCode,
+                )}{" "}
+                per month
+              </s-text>
+              <s-text color="subdued">
+                Trial length: {billing.trialDays}{" "}
+                {billing.trialDays === 1 ? "day" : "days"}
+              </s-text>
+            </s-stack>
+          </s-box>
+
+          <s-unordered-list>
+            <s-list-item>
+              Keep billing disabled until price, trial length, and
+              App Store listing copy are final.
+            </s-list-item>
+            <s-list-item>
+              Use test charges while validating install, trial,
+              cancellation, uninstall, and reinstall flows.
+            </s-list-item>
+            <s-list-item>
+              Add the billing gate only after the production plan is
+              approved.
+            </s-list-item>
+          </s-unordered-list>
         </s-stack>
       </s-section>
 
