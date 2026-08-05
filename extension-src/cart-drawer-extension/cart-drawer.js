@@ -55,6 +55,41 @@
     }
   }
 
+  function getCurrencyMinorUnit(currency) {
+    try {
+      const fractionDigits = new Intl.NumberFormat(
+        "en",
+        {
+          style: "currency",
+          currency: currency || "USD",
+        },
+      ).resolvedOptions().maximumFractionDigits;
+
+      return 10 ** fractionDigits;
+    } catch {
+      return 100;
+    }
+  }
+
+  function convertMajorToMinorUnits(amount, currency) {
+    const numericAmount = Number(amount);
+
+    if (!Number.isFinite(numericAmount)) {
+      return 0;
+    }
+
+    return Math.round(
+      numericAmount * getCurrencyMinorUnit(currency),
+    );
+  }
+
+  function replaceAmountToken(template, amount) {
+    return String(template || "").replace(
+      /\{\{\s*amount\s*\}\}|\[amount\]/g,
+      amount,
+    );
+  }
+
   function getFocusableElements(container) {
     return Array.from(
       container.querySelectorAll(
@@ -390,75 +425,83 @@
     }
 
     function renderShippingProgress(cart) {
-  if (
-    !shippingProgress ||
-    !shippingMessageElement ||
-    !shippingTrack ||
-    !shippingBar ||
-    !showShippingProgress ||
-    !Number.isFinite(shippingGoalMajor) ||
-    shippingGoalMajor <= 0
-  ) {
-    if (shippingProgress) {
-      shippingProgress.hidden = true;
+      if (
+        !shippingProgress ||
+        !shippingMessageElement ||
+        !shippingTrack ||
+        !shippingBar ||
+        !showShippingProgress ||
+        !Number.isFinite(shippingGoalMajor) ||
+        shippingGoalMajor <= 0
+      ) {
+        if (shippingProgress) {
+          shippingProgress.hidden = true;
+        }
+
+        return;
+      }
+
+      const cartCurrency = cart?.currency || "USD";
+      const goalMinor = convertMajorToMinorUnits(
+        shippingGoalMajor,
+        cartCurrency,
+      );
+
+      if (goalMinor <= 0) {
+        shippingProgress.hidden = true;
+
+        return;
+      }
+
+      const cartTotal = Number(
+        cart?.total_price || 0,
+      );
+
+      const remaining = Math.max(
+        goalMinor - cartTotal,
+        0,
+      );
+
+      const progress = Math.min(
+        (cartTotal / goalMinor) * 100,
+        100,
+      );
+
+      shippingProgress.hidden = false;
+
+      shippingBar.style.width = `${progress}%`;
+
+      shippingTrack.setAttribute(
+        "aria-valuenow",
+        String(Math.round(progress)),
+      );
+
+      if (remaining === 0) {
+        shippingProgress.classList.add(
+          "is-complete",
+        );
+
+        shippingMessageElement.textContent =
+          shippingSuccessMessage;
+
+        return;
+      }
+
+      shippingProgress.classList.remove(
+        "is-complete",
+      );
+
+      const formattedRemaining = formatMoney(
+        remaining,
+        cartCurrency,
+      );
+
+      shippingMessageElement.textContent =
+        replaceAmountToken(
+          shippingMessage,
+          formattedRemaining,
+        );
     }
-
-    return;
-  }
-
-  const goalMinor = Math.round(
-    shippingGoalMajor * 100,
-  );
-
-  const cartTotal = Number(
-    cart?.total_price || 0,
-  );
-
-  const remaining = Math.max(
-    goalMinor - cartTotal,
-    0,
-  );
-
-  const progress = Math.min(
-    (cartTotal / goalMinor) * 100,
-    100,
-  );
-
-  shippingProgress.hidden = false;
-
-  shippingBar.style.width = `${progress}%`;
-
-  shippingTrack.setAttribute(
-    "aria-valuenow",
-    String(Math.round(progress)),
-  );
-
-  if (remaining === 0) {
-    shippingProgress.classList.add(
-      "is-complete",
-    );
-
-    shippingMessageElement.textContent =
-      shippingSuccessMessage;
-
-    return;
-  }
-
-  shippingProgress.classList.remove(
-    "is-complete",
-  );
-
-  const formattedRemaining = formatMoney(
-    remaining,
-    cart.currency,
-  );
-
-  shippingMessageElement.textContent =
-    shippingMessage.replace(
-       "[amount]",
-      formattedRemaining,
-    );
-}
 
     function renderCart(cart) {
       renderShippingProgress(cart);
