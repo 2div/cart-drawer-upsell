@@ -1,0 +1,222 @@
+{
+  "blocks": {
+    "cart_drawer": {
+      "name": "Cart Drawer",
+      "settings": {
+        "replace_native_drawer": {
+          "label": "Replace the theme cart drawer"
+        },
+        "heading": {
+          "label": "Drawer heading",
+          "default": "Your cart"
+        },
+        "launcher_label": {
+          "label": "Test button label",
+          "default": "Open cart"
+        },
+        "empty_message": {
+          "label": "Empty cart message",
+          "default": "Your cart is empty."
+        },
+        "continue_shopping_label": {
+          "label": "Continue shopping label",
+          "default": "Continue shopping"
+        },
+        "close_label": {
+          "label": "Close button accessibility label",
+          "default": "Close cart drawer"
+        },
+        "subtotal_label": {
+          "label": "Subtotal label",
+          "default": "Subtotal"
+        },
+        "checkout_label": {
+          "label": "Checkout button label",
+          "default": "Check out"
+        },
+        "loading_message": {
+          "label": "Loading cart message",
+          "default": "Loading cart..."
+        },
+        "cart_load_error_message": {
+          "label": "Cart load error message",
+          "default": "We could not load your cart. Please try again."
+        },
+        "cart_update_error_message": {
+          "label": "Cart update error message",
+          "default": "The cart could not be updated."
+        },
+        "cart_sold_out_message": {
+          "label": "Cart sold-out message",
+          "default": "Sold out."
+        },
+        "item_added_message": {
+          "label": "Item added message",
+          "default": "Item added to the cart."
+        },
+        "item_removed_message": {
+          "label": "Item removed message",
+          "default": "Item removed from the cart."
+        },
+        "quantity_updated_message": {
+          "label": "Quantity updated message",
+          "default": "Cart quantity updated."
+        },
+        "product_fallback_label": {
+          "label": "Fallback product label",
+          "default": "Product"
+        },
+        "quantity_label": {
+          "label": "Quantity accessibility label",
+          "default": "Quantity for [title]"
+        },
+        "decrease_label": {
+          "label": "Decrease quantity accessibility label",
+          "default": "Decrease quantity of [title]"
+        },
+        "increase_label": {
+          "label": "Increase quantity accessibility label",
+          "default": "Increase quantity of [title]"
+        },
+        "remove_label": {
+          "label": "Remove item accessibility label",
+          "default": "Remove [title]"
+        },
+        "remove_title": {
+          "label": "Remove item tooltip",
+          "default": "Remove"
+        },
+        "show_shipping_progress": {
+          "label": "Show free shipping progress"
+        },
+        "shipping_goal": {
+          "label": "Free shipping goal"
+        },
+        "shipping_message": {
+          "label": "Progress message",
+          "default": "You are [amount] away from free shipping"
+        },
+        "shipping_success_message": {
+          "label": "Success message",
+          "default": "You have unlocked free shipping!"
+        },
+        "shipping_progress_label": {
+          "label": "Progress bar accessibility label",
+          "default": "Free shipping progress"
+        },
+        "upsell_heading": {
+          "label": "Upsell heading",
+          "default": "You may also like"
+        },
+        "upsell_limit": {
+          "label": "Upsells shown"
+        },
+        "upsell_add_label": {
+          "label": "Upsell add button label",
+          "default": "Add"
+        },
+        "upsell_adding_label": {
+          "label": "Upsell adding button label",
+          "default": "Adding..."
+        },
+        "upsell_added_label": {
+          "label": "Upsell added button label",
+          "default": "Added"
+        },
+        "upsell_try_again_label": {
+          "label": "Upsell retry button label",
+          "default": "Try again"
+        },
+        "upsell_sold_out_label": {
+          "label": "Upsell sold-out button label",
+          "default": "Sold out"
+        },
+        "upsell_sold_out_message": {
+          "label": "Upsell sold-out message",
+          "default": "This item is sold out."
+        },
+        "upsell_already_sold_out_message": {
+          "label": "Upsell already sold-out message",
+          "default": "This item is already sold out."
+        },
+        "upsell_unavailable_message": {
+          "label": "Upsell unavailable message",
+          "default": "This item is currently unavailable."
+        },
+        "upsell_add_error_message": {
+          "label": "Upsell add error message",
+          "default": "This item could not be added."
+        },
+        "upsell_add_error_retry_message": {
+          "label": "Upsell retry error message",
+          "default": "This item could not be added. Please try again."
+        },
+        "show_order_note": {
+          "label": "Show order note"
+        },
+        "note_label": {
+          "label": "Order note heading",
+          "default": "Add note"
+        },
+        "note_input_label": {
+          "label": "Order note input label",
+          "default": "Order note"
+        },
+        "note_button_label": {
+          "label": "Order note button label",
+          "default": "Save note"
+        },
+        "note_empty_message": {
+          "label": "Empty order note message",
+          "default": "Enter an order note."
+        },
+        "note_success_message": {
+          "label": "Order note success message",
+          "default": "Order note saved."
+        },
+        "show_discount_code": {
+          "label": "Show discount code"
+        },
+        "discount_label": {
+          "label": "Discount heading",
+          "default": "Add discount code"
+        },
+        "discount_input_label": {
+          "label": "Discount input label",
+          "default": "Discount code"
+        },
+        "discount_button_label": {
+          "label": "Discount button label",
+          "default": "Apply"
+        },
+        "discount_empty_message": {
+          "label": "Empty discount message",
+          "default": "Enter a discount code."
+        },
+        "discount_success_message": {
+          "label": "Discount success message",
+          "default": "Discount code applied."
+        },
+        "discount_failure_message": {
+          "label": "Discount failure message",
+          "default": "Discount code was not applied."
+        },
+        "background_color": {
+          "label": "Background color"
+        },
+        "text_color": {
+          "label": "Text color"
+        },
+        "button_background_color": {
+          "label": "Button background color"
+        },
+        "button_text_color": {
+          "label": "Button text color"
+        },
+        "progress_color": {
+          "label": "Progress bar color"
+        }
+      }
+    }
+  }
+}

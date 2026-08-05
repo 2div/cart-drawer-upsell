@@ -1,0 +1,222 @@
+{
+  "blocks": {
+    "cart_drawer": {
+      "name": "درج السلة",
+      "settings": {
+        "replace_native_drawer": {
+          "label": "استبدال درج السلة الخاص بالقالب"
+        },
+        "heading": {
+          "label": "عنوان درج السلة",
+          "default": "سلتك"
+        },
+        "launcher_label": {
+          "label": "تسمية زر الاختبار",
+          "default": "فتح السلة"
+        },
+        "empty_message": {
+          "label": "رسالة السلة الفارغة",
+          "default": "سلتك فارغة."
+        },
+        "continue_shopping_label": {
+          "label": "تسمية متابعة التسوق",
+          "default": "متابعة التسوق"
+        },
+        "close_label": {
+          "label": "تسمية إمكانية الوصول لزر الإغلاق",
+          "default": "إغلاق درج السلة"
+        },
+        "subtotal_label": {
+          "label": "تسمية المجموع الفرعي",
+          "default": "المجموع الفرعي"
+        },
+        "checkout_label": {
+          "label": "تسمية زر الدفع",
+          "default": "الدفع"
+        },
+        "loading_message": {
+          "label": "رسالة تحميل السلة",
+          "default": "جار تحميل السلة..."
+        },
+        "cart_load_error_message": {
+          "label": "رسالة خطأ تحميل السلة",
+          "default": "تعذر تحميل سلتك. يرجى المحاولة مرة أخرى."
+        },
+        "cart_update_error_message": {
+          "label": "رسالة خطأ تحديث السلة",
+          "default": "تعذر تحديث السلة."
+        },
+        "cart_sold_out_message": {
+          "label": "رسالة نفاد الكمية في السلة",
+          "default": "نفدت الكمية."
+        },
+        "item_added_message": {
+          "label": "رسالة إضافة المنتج",
+          "default": "تمت إضافة المنتج إلى السلة."
+        },
+        "item_removed_message": {
+          "label": "رسالة إزالة المنتج",
+          "default": "تمت إزالة المنتج من السلة."
+        },
+        "quantity_updated_message": {
+          "label": "رسالة تحديث الكمية",
+          "default": "تم تحديث كمية السلة."
+        },
+        "product_fallback_label": {
+          "label": "تسمية المنتج الاحتياطية",
+          "default": "منتج"
+        },
+        "quantity_label": {
+          "label": "تسمية إمكانية الوصول للكمية",
+          "default": "كمية [title]"
+        },
+        "decrease_label": {
+          "label": "تسمية إمكانية الوصول لتقليل الكمية",
+          "default": "تقليل كمية [title]"
+        },
+        "increase_label": {
+          "label": "تسمية إمكانية الوصول لزيادة الكمية",
+          "default": "زيادة كمية [title]"
+        },
+        "remove_label": {
+          "label": "تسمية إمكانية الوصول لإزالة المنتج",
+          "default": "إزالة [title]"
+        },
+        "remove_title": {
+          "label": "تلميح إزالة المنتج",
+          "default": "إزالة"
+        },
+        "show_shipping_progress": {
+          "label": "إظهار تقدم الشحن المجاني"
+        },
+        "shipping_goal": {
+          "label": "هدف الشحن المجاني"
+        },
+        "shipping_message": {
+          "label": "رسالة التقدم",
+          "default": "باقي [amount] للحصول على الشحن المجاني"
+        },
+        "shipping_success_message": {
+          "label": "رسالة النجاح",
+          "default": "لقد حصلت على الشحن المجاني!"
+        },
+        "shipping_progress_label": {
+          "label": "تسمية إمكانية الوصول لشريط التقدم",
+          "default": "تقدم الشحن المجاني"
+        },
+        "upsell_heading": {
+          "label": "عنوان المنتجات المقترحة",
+          "default": "قد يعجبك أيضا"
+        },
+        "upsell_limit": {
+          "label": "عدد المنتجات المقترحة المعروضة"
+        },
+        "upsell_add_label": {
+          "label": "تسمية زر إضافة المنتج المقترح",
+          "default": "إضافة"
+        },
+        "upsell_adding_label": {
+          "label": "تسمية زر الإضافة أثناء التحميل",
+          "default": "جار الإضافة..."
+        },
+        "upsell_added_label": {
+          "label": "تسمية زر المنتج المضاف",
+          "default": "تمت الإضافة"
+        },
+        "upsell_try_again_label": {
+          "label": "تسمية زر إعادة المحاولة",
+          "default": "حاول مرة أخرى"
+        },
+        "upsell_sold_out_label": {
+          "label": "تسمية زر نفاد كمية المنتج المقترح",
+          "default": "نفدت الكمية"
+        },
+        "upsell_sold_out_message": {
+          "label": "رسالة نفاد كمية المنتج المقترح",
+          "default": "نفدت كمية هذا المنتج."
+        },
+        "upsell_already_sold_out_message": {
+          "label": "رسالة نفاد الكمية مسبقا للمنتج المقترح",
+          "default": "نفدت كمية هذا المنتج مسبقا."
+        },
+        "upsell_unavailable_message": {
+          "label": "رسالة عدم توفر المنتج المقترح",
+          "default": "هذا المنتج غير متوفر حاليا."
+        },
+        "upsell_add_error_message": {
+          "label": "رسالة خطأ إضافة المنتج المقترح",
+          "default": "تعذرت إضافة هذا المنتج."
+        },
+        "upsell_add_error_retry_message": {
+          "label": "رسالة خطأ إعادة محاولة المنتج المقترح",
+          "default": "تعذرت إضافة هذا المنتج. يرجى المحاولة مرة أخرى."
+        },
+        "show_order_note": {
+          "label": "إظهار ملاحظة الطلب"
+        },
+        "note_label": {
+          "label": "عنوان ملاحظة الطلب",
+          "default": "إضافة ملاحظة"
+        },
+        "note_input_label": {
+          "label": "تسمية حقل ملاحظة الطلب",
+          "default": "ملاحظة الطلب"
+        },
+        "note_button_label": {
+          "label": "تسمية زر ملاحظة الطلب",
+          "default": "حفظ الملاحظة"
+        },
+        "note_empty_message": {
+          "label": "رسالة ملاحظة الطلب الفارغة",
+          "default": "أدخل ملاحظة للطلب."
+        },
+        "note_success_message": {
+          "label": "رسالة نجاح ملاحظة الطلب",
+          "default": "تم حفظ ملاحظة الطلب."
+        },
+        "show_discount_code": {
+          "label": "إظهار رمز الخصم"
+        },
+        "discount_label": {
+          "label": "عنوان الخصم",
+          "default": "إضافة رمز خصم"
+        },
+        "discount_input_label": {
+          "label": "تسمية حقل رمز الخصم",
+          "default": "رمز الخصم"
+        },
+        "discount_button_label": {
+          "label": "تسمية زر الخصم",
+          "default": "تطبيق"
+        },
+        "discount_empty_message": {
+          "label": "رسالة الخصم الفارغة",
+          "default": "أدخل رمز خصم."
+        },
+        "discount_success_message": {
+          "label": "رسالة نجاح الخصم",
+          "default": "تم تطبيق رمز الخصم."
+        },
+        "discount_failure_message": {
+          "label": "رسالة فشل الخصم",
+          "default": "لم يتم تطبيق رمز الخصم."
+        },
+        "background_color": {
+          "label": "لون الخلفية"
+        },
+        "text_color": {
+          "label": "لون النص"
+        },
+        "button_background_color": {
+          "label": "لون خلفية الزر"
+        },
+        "button_text_color": {
+          "label": "لون نص الزر"
+        },
+        "progress_color": {
+          "label": "لون شريط التقدم"
+        }
+      }
+    }
+  }
+}
