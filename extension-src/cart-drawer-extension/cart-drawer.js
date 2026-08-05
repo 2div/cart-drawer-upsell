@@ -251,6 +251,21 @@
     const continueShoppingLabel =
       root.dataset.cduContinueShoppingLabel ||
       "Continue shopping";
+    const noteEmptyMessage =
+      root.dataset.cduNoteEmptyMessage ||
+      "Enter an order note.";
+    const noteSuccessMessage =
+      root.dataset.cduNoteSuccessMessage ||
+      "Order note saved.";
+    const discountEmptyMessage =
+      root.dataset.cduDiscountEmptyMessage ||
+      "Enter a discount code.";
+    const discountSuccessMessage =
+      root.dataset.cduDiscountSuccessMessage ||
+      "Discount code applied.";
+    const discountFailureMessage =
+      root.dataset.cduDiscountFailureMessage ||
+      "Discount code was not applied.";
 
     if (
       !openButton ||
@@ -704,7 +719,7 @@
       if (!note) {
         setFieldMessage(
           noteMessage,
-          "Enter an order note.",
+          noteEmptyMessage,
           "warning",
         );
         return;
@@ -715,7 +730,7 @@
           note,
         },
         noteMessage,
-        "Order note saved.",
+        noteSuccessMessage,
       );
     }
 
@@ -727,7 +742,7 @@
       if (!code) {
         setFieldMessage(
           discountMessage,
-          "Enter a discount code.",
+          discountEmptyMessage,
           "warning",
         );
         return;
@@ -746,8 +761,8 @@
           (cart.cart_level_discount_applications || [])
             .length > 0;
         const message = discountApplied
-          ? "Discount code applied."
-          : "Discount code was not applied.";
+          ? discountSuccessMessage
+          : discountFailureMessage;
 
         renderCart(cart);
         updateThemeCartUI(cart);

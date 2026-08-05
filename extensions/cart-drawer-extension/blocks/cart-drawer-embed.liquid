@@ -12,6 +12,11 @@
   data-cdu-upsell-limit="{{ block.settings.upsell_limit }}"
   data-cdu-empty-message="{{ block.settings.empty_message | escape }}"
   data-cdu-continue-shopping-label="{{ block.settings.continue_shopping_label | escape }}"
+  data-cdu-note-empty-message="{{ block.settings.note_empty_message | escape }}"
+  data-cdu-note-success-message="{{ block.settings.note_success_message | escape }}"
+  data-cdu-discount-empty-message="{{ block.settings.discount_empty_message | escape }}"
+  data-cdu-discount-success-message="{{ block.settings.discount_success_message | escape }}"
+  data-cdu-discount-failure-message="{{ block.settings.discount_failure_message | escape }}"
   style="
     --cdu-background: {{ block.settings.background_color }};
     --cdu-text: {{ block.settings.text_color }};
@@ -121,19 +126,19 @@
 
       {% if block.settings.show_order_note %}
         <details class="cdu-cart-drawer__extra">
-          <summary>Add note</summary>
+          <summary>{{ block.settings.note_label }}</summary>
           <div class="cdu-cart-drawer__field">
             <textarea
               data-cdu-note
               rows="3"
-              aria-label="Order note"
+              aria-label="{{ block.settings.note_input_label }}"
             ></textarea>
             <button
               type="button"
               data-cdu-note-save
               data-cdu-action
             >
-              Save note
+              {{ block.settings.note_button_label }}
             </button>
             <p data-cdu-note-message role="status"></p>
           </div>
@@ -142,20 +147,20 @@
 
       {% if block.settings.show_discount_code %}
         <details class="cdu-cart-drawer__extra">
-          <summary>Add discount code</summary>
+          <summary>{{ block.settings.discount_label }}</summary>
           <div class="cdu-cart-drawer__field">
             <input
               data-cdu-discount
               type="text"
               autocomplete="off"
-              aria-label="Discount code"
+              aria-label="{{ block.settings.discount_input_label }}"
             >
             <button
               type="button"
               data-cdu-discount-save
               data-cdu-action
             >
-              Apply
+              {{ block.settings.discount_button_label }}
             </button>
             <p data-cdu-discount-message role="status"></p>
           </div>
@@ -285,10 +290,76 @@
       "default": true
     },
     {
+      "type": "text",
+      "id": "note_label",
+      "label": "Order note heading",
+      "default": "Add note"
+    },
+    {
+      "type": "text",
+      "id": "note_input_label",
+      "label": "Order note input label",
+      "default": "Order note"
+    },
+    {
+      "type": "text",
+      "id": "note_button_label",
+      "label": "Order note button label",
+      "default": "Save note"
+    },
+    {
+      "type": "text",
+      "id": "note_empty_message",
+      "label": "Empty order note message",
+      "default": "Enter an order note."
+    },
+    {
+      "type": "text",
+      "id": "note_success_message",
+      "label": "Order note success message",
+      "default": "Order note saved."
+    },
+    {
       "type": "checkbox",
       "id": "show_discount_code",
       "label": "Show discount code",
       "default": true
+    },
+    {
+      "type": "text",
+      "id": "discount_label",
+      "label": "Discount heading",
+      "default": "Add discount code"
+    },
+    {
+      "type": "text",
+      "id": "discount_input_label",
+      "label": "Discount input label",
+      "default": "Discount code"
+    },
+    {
+      "type": "text",
+      "id": "discount_button_label",
+      "label": "Discount button label",
+      "default": "Apply"
+    },
+    {
+      "type": "text",
+      "id": "discount_empty_message",
+      "label": "Empty discount message",
+      "default": "Enter a discount code."
+    },
+    {
+      "type": "text",
+      "id": "discount_success_message",
+      "label": "Discount success message",
+      "default": "Discount code applied."
+    },
+    {
+      "type": "text",
+      "id": "discount_failure_message",
+      "label": "Discount failure message",
+      "default": "Discount code was not applied."
     },
     {
       "type": "color",
