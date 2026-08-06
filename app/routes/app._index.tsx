@@ -637,12 +637,12 @@ export default function Index() {
 
   return (
     <s-page heading="Cart Drawer Upsell">
-      <s-section heading="Get started">
+      <s-section heading="Setup overview">
         <s-stack direction="block" gap="base">
           <s-paragraph>
-            Set up your cart drawer in a few minutes. Select the
-            products you want to recommend, enable the theme app
-            embed, then test the storefront cart.
+            Choose the products to recommend in the drawer, enable the
+            app embed in your theme, then test the cart on your
+            storefront.
           </s-paragraph>
 
           <s-box
@@ -673,7 +673,7 @@ export default function Index() {
 
               <s-text color="subdued">
                 {savedProductCount} of {MAX_UPSELL_PRODUCTS} saved
-                upsells will appear in the storefront drawer.
+                recommendations will appear in the drawer.
               </s-text>
             </s-stack>
           </s-box>
@@ -681,19 +681,16 @@ export default function Index() {
           <s-unordered-list>
             <s-list-item>
               Choose up to {MAX_UPSELL_PRODUCTS} active product
-              variants for the drawer.
+              variants to recommend.
             </s-list-item>
             <s-list-item>
-              Save settings after changing products or enabling
-              upsells.
+              Save changes after editing recommendations.
             </s-list-item>
             <s-list-item>
-              Open the theme editor and make sure the Cart Drawer app
-              embed is switched on.
+              Turn on the Cart Drawer app embed in the theme editor.
             </s-list-item>
             <s-list-item>
-              Test on the storefront preview, not only inside the
-              theme editor iframe.
+              Test cart behavior on the storefront preview.
             </s-list-item>
           </s-unordered-list>
 
@@ -720,20 +717,18 @@ export default function Index() {
                 type="button"
                 variant="secondary"
               >
-                Test storefront
+                Open storefront
               </s-button>
             )}
           </s-stack>
         </s-stack>
       </s-section>
 
-      <s-section heading="Upsell products">
+      <s-section heading="Product recommendations">
         <s-stack direction="block" gap="base">
           <s-paragraph>
             Choose up to {MAX_UPSELL_PRODUCTS} product variants that
-            can appear in the cart drawer. This saves the
-            configuration to app data so the theme app extension can
-            read it without editing the merchant theme.
+            can appear in the cart drawer.
           </s-paragraph>
 
           <fetcher.Form method="post">
@@ -751,7 +746,7 @@ export default function Index() {
             <s-stack direction="block" gap="base">
               <s-checkbox
                 checked={enabled}
-                label="Enable upsells in the cart drawer"
+                label="Show recommendations in the cart drawer"
                 onChange={(event) => {
                   setEnabled(event.currentTarget.checked);
                 }}
@@ -765,8 +760,8 @@ export default function Index() {
                   background="subdued"
                 >
                   <s-text>
-                    Select at least one product before enabling
-                    upsells.
+                    Select at least one product before showing
+                    recommendations.
                   </s-text>
                 </s-box>
               )}
@@ -779,7 +774,7 @@ export default function Index() {
                   background="subdued"
                 >
                   <s-text>
-                    You have unsaved upsell settings.
+                    You have unsaved recommendation changes.
                   </s-text>
                 </s-box>
               )}
@@ -803,7 +798,7 @@ export default function Index() {
 
               <s-text color="subdued">
                 {selectedProductCount} of {MAX_UPSELL_PRODUCTS}{" "}
-                upsells selected.
+                recommendations selected.
               </s-text>
             </s-stack>
           </fetcher.Form>
@@ -816,7 +811,7 @@ export default function Index() {
               background="subdued"
             >
               <s-paragraph>
-                No upsell products selected yet.
+                No recommendation products selected yet.
               </s-paragraph>
             </s-box>
           ) : (
@@ -899,8 +894,7 @@ export default function Index() {
                         {product.availableForSale === false && (
                           <s-text color="subdued">
                             No variants are currently available, so
-                            this upsell will appear disabled in the
-                            drawer.
+                            this recommendation will appear disabled.
                           </s-text>
                         )}
                       </s-stack>
@@ -926,8 +920,8 @@ export default function Index() {
       <s-section heading="Launch checklist">
         <s-stack direction="block" gap="base">
           <s-paragraph>
-            Use this after saving settings to confirm the drawer is
-            ready for shoppers.
+            Before launch, confirm the app drawer takes over the cart
+            experience on your storefront.
           </s-paragraph>
 
           <s-unordered-list>
@@ -941,8 +935,8 @@ export default function Index() {
               The native theme drawer does not open at the same time.
             </s-list-item>
             <s-list-item>
-              Upsells, quantity controls, note, discount, and checkout
-              work on the storefront preview.
+              Recommendations, quantity controls, note, discount, and
+              checkout work on the storefront preview.
             </s-list-item>
           </s-unordered-list>
 
@@ -971,11 +965,11 @@ export default function Index() {
         </s-stack>
       </s-section>
 
-      <s-section heading="Billing readiness">
+      <s-section heading="Plan status">
         <s-stack direction="block" gap="base">
           <s-paragraph>
-            Billing is configured from environment variables and is
-            not enforced until subscription terms are final.
+            Subscription billing is not active yet while pricing and
+            trial terms are being finalized.
           </s-paragraph>
 
           <s-box
@@ -991,12 +985,12 @@ export default function Index() {
                 >
                   {billing.enabled
                     ? "Billing enabled"
-                    : "Billing disabled"}
+                    : "No subscription required"}
                 </s-badge>
                 <s-badge
                   tone={billing.testMode ? "warning" : "success"}
                 >
-                  {billing.testMode ? "Test charges" : "Live charges"}
+                  {billing.testMode ? "Test mode" : "Live mode"}
                 </s-badge>
               </s-stack>
 
@@ -1017,27 +1011,22 @@ export default function Index() {
 
           <s-unordered-list>
             <s-list-item>
-              Keep billing disabled until price, trial length, and
-              App Store listing copy are final.
+              Pricing and trial details will be shown here before
+              billing is enabled.
             </s-list-item>
             <s-list-item>
-              Use test charges while validating install, trial,
-              cancellation, uninstall, and reinstall flows.
-            </s-list-item>
-            <s-list-item>
-              Add the billing gate only after the production plan is
-              approved.
+              Development and test stores can keep using the app while
+              billing is disabled.
             </s-list-item>
           </s-unordered-list>
         </s-stack>
       </s-section>
 
-      <s-section heading="Troubleshooting">
+      <s-section heading="Help">
         <s-stack direction="block" gap="base">
           <s-paragraph>
-            Most setup issues are caused by the app embed being off,
-            unsaved upsell settings, or testing cart behavior inside
-            the theme editor iframe.
+            If the drawer does not behave as expected, check these
+            common setup items first.
           </s-paragraph>
 
           <s-unordered-list>
@@ -1046,13 +1035,14 @@ export default function Index() {
               app embed and keep Replace the theme cart drawer on.
             </s-list-item>
             <s-list-item>
-              If upsells do not appear, save active product variants
-              and make sure those products are not already in the
-              cart.
+              If recommendations do not appear, save active product
+              variants and make sure those products are not already in
+              the cart.
             </s-list-item>
             <s-list-item>
-              If an upsell cannot be added, check whether the selected
-              variant is sold out or requires special product options.
+              If a recommendation cannot be added, check whether the
+              selected variant is sold out or requires special product
+              options.
             </s-list-item>
             <s-list-item>
               Use the theme editor for settings and visual checks; use
@@ -1066,20 +1056,20 @@ export default function Index() {
         <s-unordered-list>
           <s-list-item>
             {hasSavedUpsells
-              ? "Upsell products are saved and ready."
-              : "Select and save upsell products before launch."}
+              ? "Recommendation products are saved and ready."
+              : "Select and save recommendation products before launch."}
           </s-list-item>
           <s-list-item>
             {savedBaseline.enabled
-              ? "Upsells are enabled for the drawer."
-              : "Upsells are currently turned off."}
+              ? "Recommendations are enabled for the drawer."
+              : "Recommendations are currently turned off."}
           </s-list-item>
           <s-list-item>
             The drawer reads settings from app data without theme file
             edits.
           </s-list-item>
           <s-list-item>
-            Exact variants can be selected, and sold-out upsells
+            Exact variants can be selected, and sold-out products
             appear disabled in the drawer.
           </s-list-item>
         </s-unordered-list>
