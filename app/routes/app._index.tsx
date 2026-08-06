@@ -356,7 +356,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     return {
       ok: false,
       errors: [
-        "Select at least one upsell product or turn upsells off.",
+        "Select at least one recommendation product or turn recommendations off.",
       ],
     };
   }
@@ -367,7 +367,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const warnings =
     skippedProductCount > 0
       ? [
-          `${skippedProductCount} inactive or unavailable upsell ${
+          `${skippedProductCount} inactive or unavailable recommendation ${
             skippedProductCount === 1 ? "product was" : "products were"
           } skipped.`,
         ]
@@ -377,7 +377,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     return {
       ok: false,
       errors: [
-        "Select at least one active upsell product or turn upsells off.",
+        "Select at least one active recommendation product or turn recommendations off.",
       ],
     };
   }
@@ -585,7 +585,7 @@ export default function Index() {
 
     if (activeProducts.length < selection.selection.length) {
       shopify.toast.show(
-        "Only active products can be used as upsells. Draft, archived, and hidden products were ignored.",
+        "Only active products can be recommended. Draft, archived, and hidden products were ignored.",
         {
           isError: true,
         },
@@ -618,7 +618,7 @@ export default function Index() {
 
     if (selectedUpsells.length > MAX_UPSELL_PRODUCTS) {
       shopify.toast.show(
-        `Only the first ${MAX_UPSELL_PRODUCTS} upsells were selected.`,
+        `Only the first ${MAX_UPSELL_PRODUCTS} recommendations were selected.`,
       );
     }
 
@@ -696,7 +696,7 @@ export default function Index() {
 
           <s-stack direction="inline" gap="base">
             <s-button type="button" onClick={chooseProducts}>
-              Select upsells
+              Select recommendations
             </s-button>
 
             {themeEditorUrl && (

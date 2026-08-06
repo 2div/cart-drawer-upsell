@@ -83,8 +83,8 @@ storefront preview, leave it unchecked.
 ## Admin UX
 
 - [ ] Merchant can understand setup without developer tools.
-- [ ] Get started section accurately describes the install flow.
-- [ ] Setup status reflects saved upsell state.
+- [ ] Setup overview section accurately describes the install flow.
+- [ ] Setup status reflects saved recommendation state.
 - [ ] Theme editor link opens the current theme editor.
 - [ ] Storefront test link opens a usable storefront preview.
 - [ ] Validation errors are shown as merchant-friendly toasts.

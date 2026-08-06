@@ -28,14 +28,15 @@ Before submitting the app, prepare the review store with:
 - The Theme App Extension app embed enabled.
 - Replace the theme cart drawer enabled.
 - At least one regular product that reviewers can add to cart.
-- At least two upsell variants saved in the app admin.
+- At least two recommendation variants saved in the app admin.
 - One sold-out upsell variant if you want reviewers to verify disabled upsell
   behavior.
 
 ## Reviewer Test Steps
 
 1. Open the app from Shopify admin.
-2. Confirm the Get started section shows saved upsells and setup status.
+2. Confirm the Setup overview section shows saved recommendations and setup
+   status.
 3. Open the theme editor from the app.
 4. Confirm the Cart Drawer app embed is enabled.
 5. Open the storefront preview.
