@@ -917,30 +917,50 @@ export default function Index() {
         </s-stack>
       </s-section>
 
-      <s-section heading="Launch checklist">
+      <s-section slot="aside" heading="Setup status">
+        <s-unordered-list>
+          <s-list-item>
+            {hasSavedUpsells
+              ? "Recommendation products are saved and ready."
+              : "Select and save recommendation products before launch."}
+          </s-list-item>
+          <s-list-item>
+            {savedBaseline.enabled
+              ? "Recommendations are enabled for the drawer."
+              : "Recommendations are currently turned off."}
+          </s-list-item>
+          <s-list-item>
+            The drawer reads settings from app data without theme file
+            edits.
+          </s-list-item>
+          <s-list-item>
+            Exact variants can be selected, and sold-out products
+            appear disabled in the drawer.
+          </s-list-item>
+        </s-unordered-list>
+      </s-section>
+
+      <s-section slot="aside" heading="Launch checklist">
         <s-stack direction="block" gap="base">
           <s-paragraph>
-            Before launch, confirm the app drawer takes over the cart
-            experience on your storefront.
+            Confirm these before sending shoppers through the drawer.
           </s-paragraph>
 
           <s-unordered-list>
-            <s-list-item>
-              Theme app embed is enabled in the current theme.
-            </s-list-item>
+            <s-list-item>Theme app embed is enabled.</s-list-item>
             <s-list-item>
               Storefront Add to Cart opens this drawer.
             </s-list-item>
             <s-list-item>
-              The native theme drawer does not open at the same time.
+              The native theme drawer does not open too.
             </s-list-item>
             <s-list-item>
               Recommendations, quantity controls, note, discount, and
-              checkout work on the storefront preview.
+              checkout work.
             </s-list-item>
           </s-unordered-list>
 
-          <s-stack direction="inline" gap="base">
+          <s-stack direction="block" gap="small">
             {themeEditorUrl && (
               <s-button
                 href={themeEditorUrl}
@@ -965,112 +985,51 @@ export default function Index() {
         </s-stack>
       </s-section>
 
-      <s-section heading="Plan status">
+      <s-section slot="aside" heading="Plan status">
         <s-stack direction="block" gap="base">
-          <s-paragraph>
-            Subscription billing is not active yet while pricing and
-            trial terms are being finalized.
-          </s-paragraph>
+          <s-stack direction="inline" gap="small">
+            <s-badge
+              tone={billing.enabled ? "warning" : "success"}
+            >
+              {billing.enabled
+                ? "Billing enabled"
+                : "No subscription required"}
+            </s-badge>
+            <s-badge
+              tone={billing.testMode ? "warning" : "success"}
+            >
+              {billing.testMode ? "Test mode" : "Live mode"}
+            </s-badge>
+          </s-stack>
 
-          <s-box
-            padding="base"
-            borderWidth="base"
-            borderRadius="base"
-            background="subdued"
-          >
-            <s-stack direction="block" gap="small">
-              <s-stack direction="inline" gap="small">
-                <s-badge
-                  tone={billing.enabled ? "warning" : "success"}
-                >
-                  {billing.enabled
-                    ? "Billing enabled"
-                    : "No subscription required"}
-                </s-badge>
-                <s-badge
-                  tone={billing.testMode ? "warning" : "success"}
-                >
-                  {billing.testMode ? "Test mode" : "Live mode"}
-                </s-badge>
-              </s-stack>
-
-              <s-text>
-                {billing.planName}:{" "}
-                {formatBillingPrice(
-                  billing.monthlyPrice,
-                  billing.currencyCode,
-                )}{" "}
-                per month
-              </s-text>
-              <s-text color="subdued">
-                Trial length: {billing.trialDays}{" "}
-                {billing.trialDays === 1 ? "day" : "days"}
-              </s-text>
-            </s-stack>
-          </s-box>
-
-          <s-unordered-list>
-            <s-list-item>
-              Pricing and trial details will be shown here before
-              billing is enabled.
-            </s-list-item>
-            <s-list-item>
-              Development and test stores can keep using the app while
-              billing is disabled.
-            </s-list-item>
-          </s-unordered-list>
+          <s-text>
+            {billing.planName}:{" "}
+            {formatBillingPrice(
+              billing.monthlyPrice,
+              billing.currencyCode,
+            )}{" "}
+            per month
+          </s-text>
+          <s-text color="subdued">
+            Trial length: {billing.trialDays}{" "}
+            {billing.trialDays === 1 ? "day" : "days"}
+          </s-text>
         </s-stack>
       </s-section>
 
-      <s-section heading="Help">
-        <s-stack direction="block" gap="base">
-          <s-paragraph>
-            If the drawer does not behave as expected, check these
-            common setup items first.
-          </s-paragraph>
-
-          <s-unordered-list>
-            <s-list-item>
-              If the app drawer does not open, enable the Cart Drawer
-              app embed and keep Replace the theme cart drawer on.
-            </s-list-item>
-            <s-list-item>
-              If recommendations do not appear, save active product
-              variants and make sure those products are not already in
-              the cart.
-            </s-list-item>
-            <s-list-item>
-              If a recommendation cannot be added, check whether the
-              selected variant is sold out or requires special product
-              options.
-            </s-list-item>
-            <s-list-item>
-              Use the theme editor for settings and visual checks; use
-              the storefront preview for final cart behavior testing.
-            </s-list-item>
-          </s-unordered-list>
-        </s-stack>
-      </s-section>
-
-      <s-section slot="aside" heading="Setup status">
+      <s-section slot="aside" heading="Help">
         <s-unordered-list>
           <s-list-item>
-            {hasSavedUpsells
-              ? "Recommendation products are saved and ready."
-              : "Select and save recommendation products before launch."}
+            If the drawer does not open, enable the app embed and keep
+            Replace the theme cart drawer on.
           </s-list-item>
           <s-list-item>
-            {savedBaseline.enabled
-              ? "Recommendations are enabled for the drawer."
-              : "Recommendations are currently turned off."}
+            If recommendations do not appear, save active variants and
+            make sure those products are not already in the cart.
           </s-list-item>
           <s-list-item>
-            The drawer reads settings from app data without theme file
-            edits.
-          </s-list-item>
-          <s-list-item>
-            Exact variants can be selected, and sold-out products
-            appear disabled in the drawer.
+            Use the theme editor for settings and the storefront for
+            final cart testing.
           </s-list-item>
         </s-unordered-list>
       </s-section>
