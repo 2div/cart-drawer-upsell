@@ -69,6 +69,7 @@ storefront preview, leave it unchecked.
 - [ ] Privacy policy URL is ready.
 - [ ] Terms of service URL is ready.
 - [ ] Support contact email or support URL is ready.
+- [ ] `docs/support-policy.md` placeholders are replaced with real support details.
 - [ ] Production app URL and auth redirect URL are configured.
 
 ## Billing
