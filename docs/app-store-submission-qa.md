@@ -109,6 +109,7 @@ Also confirm:
 - [ ] Generated storefront JavaScript is built from source files.
 - [ ] Generated assets are not manually edited.
 - [ ] Theme Check does not report blocking errors.
+- [ ] `docs/deployment-checklist.md` is completed for the production app.
 - [ ] Production database and session storage are not using local SQLite.
 - [ ] Production `SHOPIFY_APP_URL` and redirect URL are correct.
 - [ ] App scopes match the implemented features.
