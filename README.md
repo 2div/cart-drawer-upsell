@@ -96,6 +96,9 @@ Run local release checks:
 npm run check:release
 ```
 
+The same release check runs in GitHub Actions for pull requests and pushes to
+`main`. Shopify CLI checks still need to be run separately:
+
 Run Shopify extension checks:
 
 ```bash
