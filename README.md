@@ -147,6 +147,7 @@ Test on the live/dev storefront preview, not only inside the theme editor iframe
 - `docs/billing-roadmap.md`
 - `docs/data-and-privacy.md`
 - `docs/deployment-checklist.md`
+- `docs/privacy-policy-prep.md`
 - `docs/shopify-review-guide.md`
 - `docs/support-policy.md`
 - `docs/theme-compatibility-matrix.md`

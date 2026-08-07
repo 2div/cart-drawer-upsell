@@ -67,6 +67,7 @@ storefront preview, leave it unchecked.
 - [ ] App explains what merchant data is stored.
 - [ ] App data is stored per app installation.
 - [ ] App uninstall webhook deletes local sessions by shop.
+- [ ] `docs/privacy-policy-prep.md` is reviewed and converted into a public privacy policy.
 - [ ] Privacy policy URL is ready.
 - [ ] Terms of service URL is ready.
 - [ ] Support contact email or support URL is ready.
