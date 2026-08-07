@@ -514,7 +514,7 @@ export default function Index() {
       setEnabled(savedConfig.enabled);
       setProducts(savedConfig.products);
       setSavedBaseline(savedConfig);
-      shopify.toast.show("Upsell settings saved");
+      shopify.toast.show("Recommendation settings saved");
 
       if (warnings.length > 0) {
         shopify.toast.show(warnings[0]);
@@ -657,8 +657,8 @@ export default function Index() {
                   tone={hasSavedUpsells ? "success" : "warning"}
                 >
                   {hasSavedUpsells
-                    ? "Upsells ready"
-                    : "Upsells need setup"}
+                    ? "Recommendations ready"
+                    : "Recommendations need setup"}
                 </s-badge>
                 <s-badge
                   tone={
@@ -784,7 +784,7 @@ export default function Index() {
                   type="button"
                   onClick={chooseProducts}
                 >
-                  Select products
+                  Select recommendations
                 </s-button>
                 <s-button
                   type="submit"
