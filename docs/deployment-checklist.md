@@ -110,11 +110,8 @@ Run these before deploying:
 
 ```bash
 npm install
-npm run check:cart-drawer
-npm run typecheck
-npm run build
+npm run check:release
 shopify app build
-git diff --check
 ```
 
 ## Deploy Sequence

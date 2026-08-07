@@ -90,6 +90,12 @@ Build the app:
 npm run build
 ```
 
+Run local release checks:
+
+```bash
+npm run check:release
+```
+
 Run Shopify extension checks:
 
 ```bash

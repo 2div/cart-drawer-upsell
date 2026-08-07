@@ -97,11 +97,8 @@ Run these on the exact version being submitted:
 
 ```bash
 npm install
-npm run check:cart-drawer
-npm run typecheck
-npm run build
+npm run check:release
 shopify app build
-git diff --check
 ```
 
 Also confirm:
