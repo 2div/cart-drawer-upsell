@@ -100,6 +100,7 @@ storefront preview, leave it unchecked.
 - [ ] App description explains the value clearly.
 - [ ] Screenshots show drawer, upsells, admin setup, and theme editor settings.
 - [ ] Screenshots use actual app UI, not browser chrome, duplicate images, or logo-only images.
+- [ ] `docs/app-store-media-checklist.md` is completed before final screenshots are used.
 - [ ] Demo video or GIF is prepared if needed.
 - [ ] Online Store sales channel requirement is indicated in the listing.
 - [ ] Pricing copy matches the real billing plan.
