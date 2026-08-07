@@ -148,6 +148,7 @@ Test on the live/dev storefront preview, not only inside the theme editor iframe
 - `docs/deployment-checklist.md`
 - `docs/shopify-review-guide.md`
 - `docs/support-policy.md`
+- `docs/theme-compatibility-matrix.md`
 - `docs/troubleshooting.md`
 
 ## Roadmap

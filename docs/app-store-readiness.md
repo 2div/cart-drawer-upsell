@@ -33,6 +33,7 @@ storefront preview, leave it unchecked.
 - [ ] Horizon product page add to cart works.
 - [ ] Horizon header cart link opens the app drawer.
 - [ ] At least two additional popular themes are tested.
+- [ ] `docs/theme-compatibility-matrix.md` is updated with tested theme results.
 - [ ] Standard Shopify cart events are handled when themes emit them.
 - [ ] Fetch and XMLHttpRequest cart add fallbacks work.
 - [ ] Generic `/cart` links open the drawer when replacement is enabled.
