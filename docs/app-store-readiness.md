@@ -69,6 +69,7 @@ storefront preview, leave it unchecked.
 - [ ] App uninstall webhook deletes local sessions by shop.
 - [ ] `docs/privacy-policy-prep.md` is reviewed and converted into a public privacy policy.
 - [ ] Privacy policy URL is ready.
+- [ ] `docs/terms-of-service-prep.md` is reviewed and converted into public terms.
 - [ ] Terms of service URL is ready.
 - [ ] Support contact email or support URL is ready.
 - [ ] `docs/support-policy.md` placeholders are replaced with real support details.

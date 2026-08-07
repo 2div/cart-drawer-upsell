@@ -150,6 +150,7 @@ Test on the live/dev storefront preview, not only inside the theme editor iframe
 - `docs/privacy-policy-prep.md`
 - `docs/shopify-review-guide.md`
 - `docs/support-policy.md`
+- `docs/terms-of-service-prep.md`
 - `docs/theme-compatibility-matrix.md`
 - `docs/troubleshooting.md`
 
