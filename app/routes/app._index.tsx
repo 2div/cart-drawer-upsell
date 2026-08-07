@@ -985,6 +985,41 @@ export default function Index() {
         </s-stack>
       </s-section>
 
+      <s-section slot="aside" heading="Drawer settings">
+        <s-stack direction="block" gap="base">
+          <s-paragraph>
+            Customize the shopper-facing drawer from the theme editor
+            app embed.
+          </s-paragraph>
+
+          <s-unordered-list>
+            <s-list-item>Drawer heading and button text.</s-list-item>
+            <s-list-item>
+              Free-shipping goal, progress message, and success
+              message.
+            </s-list-item>
+            <s-list-item>
+              Recommendation heading and number of products shown.
+            </s-list-item>
+            <s-list-item>
+              Order note, discount code, background color, and text
+              color.
+            </s-list-item>
+          </s-unordered-list>
+
+          {themeEditorUrl && (
+            <s-button
+              href={themeEditorUrl}
+              target="_blank"
+              type="button"
+              variant="secondary"
+            >
+              Customize drawer
+            </s-button>
+          )}
+        </s-stack>
+      </s-section>
+
       <s-section slot="aside" heading="Plan status">
         <s-stack direction="block" gap="base">
           <s-stack direction="inline" gap="small">

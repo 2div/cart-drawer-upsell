@@ -85,6 +85,7 @@ storefront preview, leave it unchecked.
 - [ ] Merchant can understand setup without developer tools.
 - [ ] Setup overview section accurately describes the install flow.
 - [ ] Setup status reflects saved recommendation state.
+- [ ] Admin page explains which drawer settings live in the theme editor app embed.
 - [ ] Theme editor link opens the current theme editor.
 - [ ] Storefront test link opens a usable storefront preview.
 - [ ] Validation errors are shown as merchant-friendly toasts.
