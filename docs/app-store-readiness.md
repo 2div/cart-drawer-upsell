@@ -108,6 +108,7 @@ storefront preview, leave it unchecked.
 - [ ] Pricing copy matches the real billing plan.
 - [ ] Support and policy links are live.
 - [ ] `docs/app-listing-draft.md` has been updated with final app listing copy.
+- [ ] `docs/app-store-submission-qa.md` is completed on the exact version being submitted.
 
 ## Shopify Review Notes
 
