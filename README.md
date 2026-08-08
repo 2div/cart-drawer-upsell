@@ -99,6 +99,9 @@ npm run check:release
 The same release check runs in GitHub Actions for pull requests and pushes to
 `main`. Shopify CLI checks still need to be run separately:
 
+Dependabot is configured to open weekly npm and GitHub Actions update pull
+requests. Review those PRs with the release check before merging.
+
 Run Shopify extension checks:
 
 ```bash
