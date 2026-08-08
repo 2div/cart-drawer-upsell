@@ -1,0 +1,54 @@
+name: Feature request
+description: Suggest a future cart drawer, upsell, admin, or compatibility feature.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or opportunity
+      description: What merchant or shopper problem would this solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What should the app do?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Feature area
+      options:
+        - Storefront drawer UI
+        - Upsell recommendations
+        - Theme compatibility
+        - Embedded admin setup
+        - Billing
+        - Analytics
+        - Translations or RTL
+        - App Store readiness
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples or references
+      description: Link examples if useful. Do not include private merchant data.
+
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: Impact checklist
+      options:
+        - label: This may require new Shopify API scopes.
+        - label: This may require privacy policy or terms changes.
+        - label: This may affect billing or pricing.
+        - label: This may need App Store listing or screenshot updates.

@@ -102,6 +102,9 @@ The same release check runs in GitHub Actions for pull requests and pushes to
 Dependabot is configured to open weekly npm and GitHub Actions update pull
 requests. Review those PRs with the release check before merging.
 
+GitHub issue templates are included for bug reports, theme compatibility
+reports, and feature requests.
+
 Run Shopify extension checks:
 
 ```bash
@@ -153,6 +156,7 @@ Test on the live/dev storefront preview, not only inside the theme editor iframe
 
 ## Documentation
 
+- `SECURITY.md`
 - `docs/app-store-readiness.md`
 - `docs/app-listing-draft.md`
 - `docs/app-store-media-checklist.md`

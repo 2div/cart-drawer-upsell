@@ -1,0 +1,99 @@
+name: Bug report
+description: Report a cart drawer, admin, build, or setup bug.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem. Do not include passwords, payment details, customer personal data, or private order details.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What went wrong?
+      placeholder: The app drawer opens, but upsell Add does not add the product.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the exact steps that show the problem.
+      placeholder: |
+        1. Open product page...
+        2. Click Add to cart...
+        3. Click upsell Add...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead?
+    validations:
+      required: true
+
+  - type: input
+    id: store-url
+    attributes:
+      label: Storefront or preview URL
+      description: Use a test or preview URL. Do not include private credentials.
+
+  - type: input
+    id: theme
+    attributes:
+      label: Theme name and version
+      placeholder: Dawn 15.0.0
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Storefront drawer
+        - Upsells
+        - Theme editor app embed
+        - Embedded admin app
+        - Billing
+        - Build or deployment
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: iframe
+    attributes:
+      label: Where did you test?
+      options:
+        - Storefront preview in normal browser tab
+        - Theme editor iframe
+        - Both
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or recording
+      description: Attach screenshots or a short recording if helpful.
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console or build output
+      description: Paste only relevant errors. Remove secrets and private data.
+

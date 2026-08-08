@@ -1,0 +1,86 @@
+name: Theme compatibility
+description: Report a theme where cart drawer replacement or cart behavior needs review.
+title: "[Theme]: "
+labels:
+  - theme compatibility
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for theme-specific behavior, such as the native drawer opening too, header cart count not updating, or a theme needing a small compatibility adapter.
+
+  - type: input
+    id: theme
+    attributes:
+      label: Theme name and version
+      placeholder: Dawn 15.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: store-url
+    attributes:
+      label: Storefront or preview URL
+      description: Use a test or preview URL. Do not include private credentials.
+
+  - type: dropdown
+    id: cart-action
+    attributes:
+      label: Cart action tested
+      options:
+        - Product page Add to Cart
+        - Quick add
+        - Header cart icon
+        - Cart page link
+        - Upsell Add
+        - Quantity change
+        - Remove item
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: replacement
+    attributes:
+      label: Replace the theme cart drawer setting
+      options:
+        - Enabled
+        - Disabled
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Observed behavior
+      description: What did the theme do?
+      placeholder: Both the native drawer and app drawer opened.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should happen?
+      placeholder: Only the app drawer should open.
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes, markup, or console details
+      description: Paste only relevant details. Remove secrets and customer data.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks completed
+      options:
+        - label: App embed is enabled in the current theme.
+        - label: Storefront preview was tested in a normal browser tab.
+        - label: Native theme drawer behavior was checked.
+        - label: Header cart count behavior was checked.
+

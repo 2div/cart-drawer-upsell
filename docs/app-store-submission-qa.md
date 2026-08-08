@@ -46,6 +46,7 @@ version being submitted.
 - [ ] Terms match the final billing plan, trial, refund, and cancellation
   policy.
 - [ ] Support policy has real business contact details.
+- [ ] `SECURITY.md` has real security contact details.
 - [ ] Policy links are accessible without login.
 
 ## Billing
