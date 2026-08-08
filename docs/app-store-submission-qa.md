@@ -105,6 +105,7 @@ shopify app build
 Also confirm:
 
 - [ ] GitHub Actions release check passes for the submitted commit.
+- [ ] `docs/release-process.md` was followed for the submitted commit.
 - [ ] Generated storefront JavaScript is built from source files.
 - [ ] Generated assets are not manually edited.
 - [ ] Theme Check does not report blocking errors.

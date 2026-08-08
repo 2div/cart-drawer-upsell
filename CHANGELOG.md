@@ -25,6 +25,8 @@ deployment, and support notes aligned with the codebase.
 - Privacy compliance webhook endpoints.
 - App Store readiness, data/privacy, deployment, review, billing, and listing
   documentation.
+- Release process documentation for development checkpoints, App Store
+  submission candidates, production releases, and hotfixes.
 
 ### Changed
 
