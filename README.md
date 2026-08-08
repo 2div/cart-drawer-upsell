@@ -96,6 +96,13 @@ Run local release checks:
 npm run check:release
 ```
 
+Check for remaining App Store submission placeholders after launch details are
+final:
+
+```bash
+npm run check:app-store-placeholders
+```
+
 The same release check runs in GitHub Actions for pull requests and pushes to
 `main`. Shopify CLI checks still need to be run separately:
 

@@ -79,6 +79,13 @@ npm install
 npm run check:release
 ```
 
+Run this before final App Store submission, after replacing launch
+placeholders:
+
+```bash
+npm run check:app-store-placeholders
+```
+
 Run this in the Shopify CLI environment:
 
 ```bash

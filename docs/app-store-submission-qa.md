@@ -99,6 +99,7 @@ Run these on the exact version being submitted:
 ```bash
 npm install
 npm run check:release
+npm run check:app-store-placeholders
 shopify app build
 ```
 
@@ -106,6 +107,8 @@ Also confirm:
 
 - [ ] GitHub Actions release check passes for the submitted commit.
 - [ ] `docs/release-process.md` was followed for the submitted commit.
+- [ ] App Store placeholder check passes after real support, policy, review,
+  compatibility, and production URL details are filled in.
 - [ ] Generated storefront JavaScript is built from source files.
 - [ ] Generated assets are not manually edited.
 - [ ] Theme Check does not report blocking errors.

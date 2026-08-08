@@ -27,6 +27,7 @@ deployment, and support notes aligned with the codebase.
   documentation.
 - Release process documentation for development checkpoints, App Store
   submission candidates, production releases, and hotfixes.
+- App Store placeholder check for final launch details.
 
 ### Changed
 
